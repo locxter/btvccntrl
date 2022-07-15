@@ -6,6 +6,9 @@
 int main(int argc, char** argv) {
     // Check for the right number of command line arguments
     if (argc == 2) {
+        // Communication related variables
+        const std::string SERIAL_PORT = argv[1];
+        BotvacController botvacController;
         // UI components
         Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("com.github.locxter.btvccntrl");
         Gtk::Window window;
@@ -51,9 +54,6 @@ int main(int argc, char** argv) {
         Gtk::Label sideBrushLabel("Side brush:");
         Gtk::ComboBoxText sideBrushInput;
         Gtk::Label aboutLabel("2022 locxter");
-        // Communication related variables
-        const std::string SERIAL_PORT = argv[1];
-        BotvacController botvacController;
         // Add functions to the buttons and inputs
         connectButton.signal_clicked().connect([&]() {
             if (!botvacController.IsOpen()) {

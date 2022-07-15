@@ -33,7 +33,7 @@ bool Visualisation::on_draw(const Cairo::RefPtr<Cairo::Context>& context) {
     } else {
         // Draw the axes
         context->set_source_rgb(0, 0, 0);
-        context->set_line_width(getScaledValue(5));
+        context->set_line_width(std::max(getScaledValue(2), 1));
         context->move_to(getScaledValue(540), 0);
         context->line_to(getScaledValue(540), getScaledValue(1080));
         context->stroke();
@@ -47,7 +47,7 @@ bool Visualisation::on_draw(const Cairo::RefPtr<Cairo::Context>& context) {
             }
             int xCoordinate = std::round(scan[i] * std::cos((i + 270) * (M_PI / 180.0)) * (-540.0 / 5000));
             int yCoordinate = std::round(scan[i] * std::sin((i + 270) * (M_PI / 180.0)) * (540.0 / 5000));
-            context->arc(getScaledValue(540 + xCoordinate), getScaledValue(540 + yCoordinate), getScaledValue(5), 0, 2 * M_PI);
+            context->arc(getScaledValue(540 + xCoordinate), getScaledValue(540 + yCoordinate), std::max(getScaledValue(4), 2), 0, 2 * M_PI);
             context->fill();
         }
     }

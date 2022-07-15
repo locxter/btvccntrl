@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
                 rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
             }
             return true;
-        }, 5000);
+        }, 4000);
         // Create the main grid
         grid.set_column_spacing(10);
         grid.set_row_spacing(10);

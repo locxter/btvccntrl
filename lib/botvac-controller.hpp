@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <libserial/SerialStream.h>
 
-// Image sorter class
+// Botvac controller class
 class BotvacController : public LibSerial::SerialStream {
     private:
     // Attributes

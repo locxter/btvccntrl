@@ -4,7 +4,7 @@
 #include <cmath>
 #include <gtkmm-3.0/gtkmm.h>
 
-// Image sorter class
+// Visualisation class
 class Visualisation : public Gtk::DrawingArea {
     private:
     // Attributes

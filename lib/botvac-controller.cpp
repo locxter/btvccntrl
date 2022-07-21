@@ -28,11 +28,11 @@ void BotvacController::initialize(std::string serialPort) {
     }
 }
 
-// Method to shutdown the robot
-void BotvacController::shutdown() {
+// Method to disconnect the robot
+void BotvacController::disconnect() {
     if (IsOpen()) {
-        *this << "SetSystemMode Shutdown" << std::endl;
-        std::getline(*this, input);
+        //*this << "SetSystemMode Shutdown" << std::endl;
+        //std::getline(*this, input);
         Close();
     }
 }
@@ -247,17 +247,25 @@ bool BotvacController::isRightSideBumperPressed() {
     return returnValue;
 }
 
-// Method the get LIDAR scan as a distance in mm vector
-std::vector<int> BotvacController::getLidarScan() {
-    std::vector<int> returnValue;
+// Method the get LIDAR scan as a x, y coordinate vector
+std::vector<std::vector<int>> BotvacController::getLidarScan() {
+    std::vector<std::vector<int>> returnValue;
     if (IsOpen()) {
         *this << "GetLDSScan" << std::endl;
         std::getline(*this, input);
         std::getline(*this, input);
         for (int i = 0; i < 360; i++) {
+            int distance;
+            std::vector<int> coordinates;
             std::getline(*this, input);
             input.erase(0, input.find(',') + 1);
-            returnValue.push_back(std::stoi(input.substr(0, input.find(','))));
+            distance = std::stoi(input.substr(0, input.find(',')));
+            if (distance > 6000 || distance == 0) {
+                continue;
+            }
+            coordinates.push_back(xCoordinate + std::round(distance * std::cos((i + 90 - angle) * (M_PI / 180.0))));
+            coordinates.push_back(yCoordinate + std::round(distance * std::sin((i + 90 - angle) * (M_PI / 180.0))));
+            returnValue.push_back(coordinates);
         }
         std::getline(*this, input);
     }
@@ -265,30 +273,44 @@ std::vector<int> BotvacController::getLidarScan() {
 }
 
 // Method to move the robot
-void BotvacController::moveRobot(int leftWheelDistance, int rightWheelDistance, int speed) {
+void BotvacController::moveRobot(int distance, int speed) {
     if (IsOpen()) {
-        if (leftWheelDistance < -10000) {
-            leftWheelDistance = -10000;
-        } else if (leftWheelDistance > 10000) {
-            leftWheelDistance = 10000;
-        } else if (leftWheelDistance == 0) {
-            leftWheelDistance = 1;
-        }
-        if (rightWheelDistance < -10000) {
-            rightWheelDistance = -10000;
-        } else if (rightWheelDistance > 10000) {
-            rightWheelDistance = 10000;
-        } else if (rightWheelDistance == 0) {
-            rightWheelDistance = 1;
+        if (distance < -10000) {
+            distance = -10000;
+        } else if (distance > 10000) {
+            distance = 10000;
         }
         if (speed < 1) {
             speed = 1;
         } else if (speed > 350) {
             speed = 350;
         }
-        *this << "SetMotor LWheelDist " << leftWheelDistance << " RWheelDist " << rightWheelDistance << " Speed " << speed << std::endl;
+        *this << "SetMotor LWheelDist " << distance << " RWheelDist " << distance << " Speed " << speed << std::endl;
         std::getline(*this, input);
-        sleep(std::ceil(std::max(std::abs(leftWheelDistance), std::abs(rightWheelDistance)) / (float) speed) + 1);
+        xCoordinate += std::round(distance * std::sin(angle * (M_PI / 180.0)));
+        yCoordinate += std::round(distance * std::cos(angle * (M_PI / 180.0)));
+        sleep(std::ceil(std::abs(distance) / (float) speed) + 1);
+    }
+}
+
+void BotvacController::rotateRobot(int angle, int speed) {
+    if (IsOpen()) {
+        int distance;
+        if (angle < -359) {
+            angle = -359;
+        } else if (angle > 359) {
+            angle = 359;
+        }
+        if (speed < 1) {
+            speed = 1;
+        } else if (speed > 350) {
+            speed = 350;
+        }
+        distance = std::round(angle * (880.0 / 360));
+        *this << "SetMotor LWheelDist " << distance << " RWheelDist " << (-1 * distance) << " Speed " << speed << std::endl;
+        std::getline(*this, input);
+        this->angle += angle;
+        sleep(std::ceil(std::abs(distance) / (float) speed) + 1);
     }
 }
 

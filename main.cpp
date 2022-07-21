@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream> 
 #include "lib/botvac-controller.hpp"
 #include "lib/visualisation.hpp"
 
@@ -6,9 +7,10 @@
 int main(int argc, char** argv) {
     // Check for the right number of command line arguments
     if (argc == 2) {
-        // Communication related variables
+        // Communication and navigation related variables
         const std::string SERIAL_PORT = argv[1];
         BotvacController botvacController;
+        std::vector<std::vector<int>> map;
         // UI components
         Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("com.github.locxter.btvccntrl");
         Gtk::Window window;
@@ -60,21 +62,42 @@ int main(int argc, char** argv) {
                 botvacController.initialize(SERIAL_PORT);
                 connectButton.set_label("Disconnect");
             } else {
-                botvacController.shutdown();
+                std::ifstream testFile;
+                int counter = 0;
+                std::string completeFilename = "map-" + std::to_string(counter) + ".csv";
+                std::ofstream outputFile;
+                botvacController.disconnect();
+                testFile.open(completeFilename);
+                while (testFile.is_open()) {
+                    testFile.close();
+                    counter++;
+                    completeFilename = "map-" + std::to_string(counter) + ".csv";
+                    testFile.open(completeFilename);
+                }
+                testFile.close();
+                outputFile.open(completeFilename);
+                outputFile << "X, Y" << std::endl;
+                for (int i = 0; i < map.size(); i++) {
+                    outputFile << map[i][0] << ", " << map[i][1];
+                    if (i < map.size() - 1) {
+                        outputFile << std::endl;
+                    }
+                }
+                outputFile.close();
                 connectButton.set_label("Connect");
             }
         });
         forwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(250, 250, 100);
+            botvacController.moveRobot(250, 100);
         });
         leftButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(-220, 220, 100);
+            botvacController.rotateRobot(-90, 100);
         });
         rightButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(220, -220, 100);
+            botvacController.rotateRobot(90, 100);
         });
         backwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(-250, -250, 100);
+            botvacController.moveRobot(-250, 100);
         });
         brushInput.signal_value_changed().connect([&]() {
             std::cout << "Brush: " << brushInput.get_value() << std::endl;
@@ -91,12 +114,24 @@ int main(int argc, char** argv) {
                 botvacController.turnSideBrushOff();
             }
         });
-        // Create a background function for updating the visualisation and displayed data
+        // Create a background function for updating the map and it's visualisation
         Glib::signal_timeout().connect([&]() -> bool {
             if (botvacController.IsOpen()) {
-                std::vector<int> scan = botvacController.getLidarScan();
-                if (!scan.empty()) {
-                    visualisation.showVisualisation(scan);
+                const int SIMILARITY_THRESHOLD = 40;
+                std::vector<std::vector<int>> scan = botvacController.getLidarScan();
+                for (int i = 0; i < scan.size(); i++) {
+                    bool uniqueCoordinates = true;
+                    for (int j = 0; j < map.size(); j++) {
+                        if ((scan[i][0] > map[j][0] - SIMILARITY_THRESHOLD && scan[i][0] < map[j][0] + SIMILARITY_THRESHOLD) && (scan[i][1] > map[j][1] - SIMILARITY_THRESHOLD && scan[i][1] < map[j][1] + SIMILARITY_THRESHOLD)) {
+                            uniqueCoordinates = false;
+                        }
+                    }
+                    if (uniqueCoordinates) {
+                        map.push_back(scan[i]);
+                    }
+                }
+                if (!map.empty()) {
+                    visualisation.showVisualisation(map);
                 }
                 pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
                 rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));

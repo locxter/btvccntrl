@@ -10,6 +10,9 @@ class BotvacController : public LibSerial::SerialStream {
     private:
     // Attributes
     std::string input;
+    int angle = 0;
+    int xCoordinate = 0;
+    int yCoordinate = 0;
 
     public:
     // Constructor
@@ -18,8 +21,8 @@ class BotvacController : public LibSerial::SerialStream {
     // Method to initialize the robot for further operation
     void initialize(std::string serialPort);
 
-    // Method to shutdown the robot
-    void shutdown();
+    // Method to disconnect the robot
+    void disconnect();
 
     // Method to get pitch in degrees
     float getPitch();
@@ -63,11 +66,14 @@ class BotvacController : public LibSerial::SerialStream {
     // Method to check whether the right side bumper is extended
     bool isRightSideBumperPressed();
 
-    // Method the get LIDAR scan as a distance in mm vector
-    std::vector<int> getLidarScan();
+    // Method the get LIDAR scan as a x, y coordinate vector
+    std::vector<std::vector<int>> getLidarScan();
 
     // Method to move the robot
-    void moveRobot(int leftWheelDistance, int rightWheelDistance, int speed);
+    void moveRobot(int distance, int speed);
+
+    // Method to rotate the robot
+    void rotateRobot(int angle, int speed);
 
     // Method to control the brush
     void controlBrush(int rpm);

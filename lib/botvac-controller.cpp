@@ -5,6 +5,19 @@ BotvacController::BotvacController() : LibSerial::SerialStream() {
     std::setlocale(LC_ALL, "C");
 }
 
+// Getter
+int BotvacController::getAngle() {
+    return angle;
+}
+
+int BotvacController::getXCoordinate() {
+    return xCoordinate;
+}
+
+int BotvacController::getYCoordinate() {
+    return yCoordinate;
+}
+
 // Method to initialize the robot for further operation
 void BotvacController::initialize(std::string serialPort) {
     if (!IsOpen()) {

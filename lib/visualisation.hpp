@@ -11,6 +11,9 @@ class Visualisation : public Gtk::DrawingArea {
     float scalingRatio;
     bool showStartScreen = true;
     std::vector<std::vector<int>> map;
+    int xCoordinate = 0;
+    int yCoordinate = 0;
+    int angle = 0;
 
     // Helper method to transform an unscaled value to a scaled one
     int getScaledValue(int unscaledValue);
@@ -24,6 +27,6 @@ class Visualisation : public Gtk::DrawingArea {
     Visualisation();
 
     // Method to update the visualisation
-    void showVisualisation(std::vector<std::vector<int>> map);
+    void showVisualisation(std::vector<std::vector<int>> map, int xCoordinate, int yCoordinate, int angle);
 };
 #endif

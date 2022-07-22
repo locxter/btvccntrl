@@ -100,11 +100,9 @@ int main(int argc, char** argv) {
             botvacController.moveRobot(-350, 175);
         });
         brushInput.signal_value_changed().connect([&]() {
-            std::cout << "Brush: " << brushInput.get_value() << std::endl;
             botvacController.controlBrush(std::round(brushInput.get_value()));
         });
         vacuumInput.signal_value_changed().connect([&]() {
-            std::cout << "Vacuum: " << vacuumInput.get_value() << std::endl;
             botvacController.controlVacuum(std::round(vacuumInput.get_value()));
         });
         sideBrushInput.signal_changed().connect([&]() {
@@ -117,11 +115,11 @@ int main(int argc, char** argv) {
         // Create a background function for updating the map and it's visualisation
         Glib::signal_timeout().connect([&]() -> bool {
             if (botvacController.IsOpen()) {
-                const int SIMILARITY_THRESHOLD = 40;
                 std::vector<std::vector<int>> scan = botvacController.getLidarScan();
                 for (int i = 0; i < scan.size(); i++) {
                     bool uniqueCoordinates = true;
                     for (int j = 0; j < map.size(); j++) {
+                        const int SIMILARITY_THRESHOLD = 40;
                         if ((scan[i][0] > map[j][0] - SIMILARITY_THRESHOLD && scan[i][0] < map[j][0] + SIMILARITY_THRESHOLD) && (scan[i][1] > map[j][1] - SIMILARITY_THRESHOLD && scan[i][1] < map[j][1] + SIMILARITY_THRESHOLD)) {
                             uniqueCoordinates = false;
                         }
@@ -131,7 +129,7 @@ int main(int argc, char** argv) {
                     }
                 }
                 if (!map.empty()) {
-                    visualisation.showVisualisation(map);
+                    visualisation.showVisualisation(map, botvacController.getXCoordinate(), botvacController.getYCoordinate(), botvacController.getAngle());
                 }
                 pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
                 rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
@@ -149,7 +147,7 @@ int main(int argc, char** argv) {
                 rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
             }
             return true;
-        }, 4000);
+        }, 2000);
         // Create the main grid
         grid.set_column_spacing(10);
         grid.set_row_spacing(10);

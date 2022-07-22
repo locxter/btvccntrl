@@ -10,13 +10,20 @@ class BotvacController : public LibSerial::SerialStream {
     private:
     // Attributes
     std::string input;
-    int angle = 0;
     int xCoordinate = 0;
     int yCoordinate = 0;
+    int angle = 0;
 
     public:
     // Constructor
     BotvacController();
+
+    // Getter
+    int getAngle();
+
+    int getXCoordinate();
+
+    int getYCoordinate();
 
     // Method to initialize the robot for further operation
     void initialize(std::string serialPort);

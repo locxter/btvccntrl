@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
                 }
                 testFile.close();
                 outputFile.open(completeFilename);
-                outputFile << "X, Y" << std::endl;
+                outputFile << "X:, Y:" << std::endl;
                 for (int i = 0; i < map.size(); i++) {
                     outputFile << map[i][0] << ", " << map[i][1];
                     if (i < map.size() - 1) {
@@ -88,16 +88,16 @@ int main(int argc, char** argv) {
             }
         });
         forwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(250, 100);
+            botvacController.moveRobot(350, 175);
         });
         leftButton.signal_clicked().connect([&]() {
-            botvacController.rotateRobot(-90, 100);
+            botvacController.rotateRobot(-90, 175);
         });
         rightButton.signal_clicked().connect([&]() {
-            botvacController.rotateRobot(90, 100);
+            botvacController.rotateRobot(90, 175);
         });
         backwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(-250, 100);
+            botvacController.moveRobot(-350, 175);
         });
         brushInput.signal_value_changed().connect([&]() {
             std::cout << "Brush: " << brushInput.get_value() << std::endl;

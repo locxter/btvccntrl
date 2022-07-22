@@ -69,7 +69,7 @@ bool Visualisation::on_draw(const Cairo::RefPtr<Cairo::Context>& context) {
             context->arc(getScaledValue(map[i][0]), getScaledValue(yRange - map[i][1]), std::max(getScaledValue(std::round(maxRange * 0.005)), 2), 0, 2 * M_PI);
             context->fill();
         }
-        // Draw the robot position and it's direction
+        // Draw the robot and it's movement direction
         if (xMinCoordinate < 0) {
             xCoordinate += std::abs(xMinCoordinate);
         } else {

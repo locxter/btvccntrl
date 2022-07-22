@@ -6,16 +6,16 @@ BotvacController::BotvacController() : LibSerial::SerialStream() {
 }
 
 // Getter
-int BotvacController::getAngle() {
-    return angle;
-}
-
 int BotvacController::getXCoordinate() {
     return xCoordinate;
 }
 
 int BotvacController::getYCoordinate() {
     return yCoordinate;
+}
+
+int BotvacController::getAngle() {
+    return angle;
 }
 
 // Method to initialize the robot for further operation

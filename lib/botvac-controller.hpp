@@ -19,11 +19,11 @@ class BotvacController : public LibSerial::SerialStream {
     BotvacController();
 
     // Getter
-    int getAngle();
-
     int getXCoordinate();
 
     int getYCoordinate();
+
+    int getAngle();
 
     // Method to initialize the robot for further operation
     void initialize(std::string serialPort);

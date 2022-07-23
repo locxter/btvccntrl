@@ -47,6 +47,9 @@ void BotvacController::disconnect() {
         //*this << "SetSystemMode Shutdown" << std::endl;
         //std::getline(*this, input);
         Close();
+        xCoordinate = 0;
+        yCoordinate = 0;
+        angle = 0;
     }
 }
 
@@ -276,8 +279,8 @@ std::vector<std::vector<int>> BotvacController::getLidarScan() {
             if (distance > 6000 || distance == 0) {
                 continue;
             }
-            coordinates.push_back(xCoordinate + std::round((-92.5 * std::cos(angle * (M_PI / 180.0))) + (distance * std::cos((i + 90 - angle) * (M_PI / 180.0)))));
-            coordinates.push_back(yCoordinate + std::round((-92.5 * std::sin(angle * (M_PI / 180.0))) + (distance * std::sin((i + 90 - angle) * (M_PI / 180.0)))));
+            coordinates.push_back(xCoordinate + std::round((-92.5 * std::sin(angle * (M_PI / 180.0))) + (distance * std::cos((i + 90 - angle) * (M_PI / 180.0)))));
+            coordinates.push_back(yCoordinate + std::round((-92.5 * std::cos(angle * (M_PI / 180.0))) + (distance * std::sin((i + 90 - angle) * (M_PI / 180.0)))));
             returnValue.push_back(coordinates);
         }
         std::getline(*this, input);

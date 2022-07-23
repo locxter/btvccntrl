@@ -84,6 +84,7 @@ int main(int argc, char** argv) {
                     }
                 }
                 outputFile.close();
+                map.clear();
                 connectButton.set_label("Connect");
             }
         });

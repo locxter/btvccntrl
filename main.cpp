@@ -84,21 +84,20 @@ int main(int argc, char** argv) {
                     }
                 }
                 outputFile.close();
-                map.clear();
                 connectButton.set_label("Connect");
             }
         });
         forwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(350, 175);
+            botvacController.moveRobot(200, 100);
         });
         leftButton.signal_clicked().connect([&]() {
-            botvacController.rotateRobot(-90, 175);
+            botvacController.rotateRobot(-90, 100);
         });
         rightButton.signal_clicked().connect([&]() {
-            botvacController.rotateRobot(90, 175);
+            botvacController.rotateRobot(90, 100);
         });
         backwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(-350, 175);
+            botvacController.moveRobot(-200, 100);
         });
         brushInput.signal_value_changed().connect([&]() {
             botvacController.controlBrush(std::round(brushInput.get_value()));
@@ -116,19 +115,7 @@ int main(int argc, char** argv) {
         // Create a background function for updating the map and it's visualisation
         Glib::signal_timeout().connect([&]() -> bool {
             if (botvacController.IsOpen()) {
-                std::vector<std::vector<int>> scan = botvacController.getLidarScan();
-                for (int i = 0; i < scan.size(); i++) {
-                    bool uniqueCoordinates = true;
-                    for (int j = 0; j < map.size(); j++) {
-                        const int SIMILARITY_THRESHOLD = 40;
-                        if ((scan[i][0] > map[j][0] - SIMILARITY_THRESHOLD && scan[i][0] < map[j][0] + SIMILARITY_THRESHOLD) && (scan[i][1] > map[j][1] - SIMILARITY_THRESHOLD && scan[i][1] < map[j][1] + SIMILARITY_THRESHOLD)) {
-                            uniqueCoordinates = false;
-                        }
-                    }
-                    if (uniqueCoordinates) {
-                        map.push_back(scan[i]);
-                    }
-                }
+                map = botvacController.getLidarMap();
                 if (!map.empty()) {
                     visualisation.showVisualisation(map, botvacController.getXCoordinate(), botvacController.getYCoordinate(), botvacController.getAngle());
                 }

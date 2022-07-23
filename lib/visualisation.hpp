@@ -8,12 +8,15 @@
 class Visualisation : public Gtk::DrawingArea {
     private:
     // Attributes
-    float scalingRatio;
-    bool showStartScreen = true;
     std::vector<std::vector<int>> map;
     int xCoordinate = 0;
     int yCoordinate = 0;
     int angle = 0;
+    float scalingRatio;
+    bool showStartScreen = true;
+    int xRange;
+    int yRange;
+    int maxRange;
 
     // Helper method to transform an unscaled value to a scaled one
     int getScaledValue(int unscaledValue);

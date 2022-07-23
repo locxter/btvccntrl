@@ -4,7 +4,7 @@
 
 ![Overview image](overview.png)
 
-This is a very simple GUI program for controlling Neato Botvac robot vacuums.
+This is a GUI program for controlling Neato Botvac robot vacuums.
 
 ## Dependencies
 

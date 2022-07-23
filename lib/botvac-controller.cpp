@@ -18,41 +18,6 @@ int BotvacController::getAngle() {
     return angle;
 }
 
-// Method to initialize the robot for further operation
-void BotvacController::initialize(std::string serialPort) {
-    if (!IsOpen()) {
-        Open(serialPort);
-        if (!IsOpen()) {
-            std::cout << "Unable to open serial port." << std::endl;
-            std::exit(1);
-        }
-        SetBaudRate(LibSerial::BaudRate::BAUD_115200);
-        *this << "TestMode On" << std::endl;
-        std::getline(*this, input);
-        *this << "SetLED BacklightOff" << std::endl;
-        std::getline(*this, input);
-        *this << "SetLED ButtonOff" << std::endl;
-        std::getline(*this, input);
-        *this << "SetLED SpotOff" << std::endl;
-        std::getline(*this, input);
-        *this << "SetLDSRotation On" << std::endl;
-        std::getline(*this, input);
-        sleep(1);
-    }
-}
-
-// Method to disconnect the robot
-void BotvacController::disconnect() {
-    if (IsOpen()) {
-        //*this << "SetSystemMode Shutdown" << std::endl;
-        //std::getline(*this, input);
-        Close();
-        xCoordinate = 0;
-        yCoordinate = 0;
-        angle = 0;
-    }
-}
-
 // Method to get pitch in degrees
 float BotvacController::getPitch() {
     float returnValue = 0;
@@ -263,7 +228,7 @@ bool BotvacController::isRightSideBumperPressed() {
     return returnValue;
 }
 
-// Method the get LIDAR scan as a x, y coordinate vector
+// Method the get LIDAR scan as a relative x, y coordinate vector
 std::vector<std::vector<int>> BotvacController::getLidarScan() {
     std::vector<std::vector<int>> returnValue;
     if (IsOpen()) {
@@ -279,13 +244,71 @@ std::vector<std::vector<int>> BotvacController::getLidarScan() {
             if (distance > 6000 || distance == 0) {
                 continue;
             }
-            coordinates.push_back(xCoordinate + std::round((-92.5 * std::sin(angle * (M_PI / 180.0))) + (distance * std::cos((i + 90 - angle) * (M_PI / 180.0)))));
-            coordinates.push_back(yCoordinate + std::round((-92.5 * std::cos(angle * (M_PI / 180.0))) + (distance * std::sin((i + 90 - angle) * (M_PI / 180.0)))));
+            coordinates.push_back(std::round((-92.5 * std::sin(angle * (M_PI / 180.0))) + (distance * std::cos((i + 90 - angle) * (M_PI / 180.0)))));
+            coordinates.push_back(std::round((-92.5 * std::cos(angle * (M_PI / 180.0))) + (distance * std::sin((i + 90 - angle) * (M_PI / 180.0)))));
             returnValue.push_back(coordinates);
         }
         std::getline(*this, input);
     }
     return returnValue;
+}
+
+// Method the get LIDAR map as an absolute x, y coordinate vector
+std::vector<std::vector<int>> BotvacController::getLidarMap() {
+    if (IsOpen()) {
+        std::vector<std::vector<int>> scan = getLidarScan();
+        for (int i = 0; i < scan.size(); i++) {
+            bool uniqueCoordinates = true;
+            scan[i][0] += xCoordinate;
+            scan[i][1] += yCoordinate;
+            for (int j = 0; j < map.size(); j++) {
+                const int SIMILARITY_THRESHOLD = 40;
+                if ((scan[i][0] > map[j][0] - SIMILARITY_THRESHOLD && scan[i][0] < map[j][0] + SIMILARITY_THRESHOLD) && (scan[i][1] > map[j][1] - SIMILARITY_THRESHOLD && scan[i][1] < map[j][1] + SIMILARITY_THRESHOLD)) {
+                    uniqueCoordinates = false;
+                }
+            }
+            if (uniqueCoordinates) {
+                map.push_back(scan[i]);
+            }
+        }
+    }
+    return map;
+}
+
+// Method to initialize the robot for further operation
+void BotvacController::initialize(std::string serialPort) {
+    if (!IsOpen()) {
+        Open(serialPort);
+        if (!IsOpen()) {
+            std::cout << "Unable to open serial port." << std::endl;
+            std::exit(1);
+        }
+        SetBaudRate(LibSerial::BaudRate::BAUD_115200);
+        *this << "TestMode On" << std::endl;
+        std::getline(*this, input);
+        *this << "SetLED BacklightOff" << std::endl;
+        std::getline(*this, input);
+        *this << "SetLED ButtonOff" << std::endl;
+        std::getline(*this, input);
+        *this << "SetLED SpotOff" << std::endl;
+        std::getline(*this, input);
+        *this << "SetLDSRotation On" << std::endl;
+        std::getline(*this, input);
+        sleep(1);
+    }
+}
+
+// Method to disconnect the robot
+void BotvacController::disconnect() {
+    if (IsOpen()) {
+        //*this << "SetSystemMode Shutdown" << std::endl;
+        //std::getline(*this, input);
+        Close();
+        xCoordinate = 0;
+        yCoordinate = 0;
+        angle = 0;
+        map.clear();
+    }
 }
 
 // Method to move the robot
@@ -322,8 +345,7 @@ void BotvacController::rotateRobot(int angle, int speed) {
         } else if (speed > 350) {
             speed = 350;
         }
-        //distance = std::round(angle * ((245.0 * M_PI) / 360));
-        distance = std::round(angle * ((260.0 * M_PI) / 360));
+        distance = std::round(angle * ((245.0 * M_PI) / 360));
         *this << "SetMotor LWheelDist " << distance << " RWheelDist " << (-1 * distance) << " Speed " << speed << std::endl;
         std::getline(*this, input);
         this->angle += angle;

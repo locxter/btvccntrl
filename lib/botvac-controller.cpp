@@ -244,8 +244,8 @@ std::vector<std::vector<int>> BotvacController::getLidarScan() {
             if (distance > 6000 || distance == 0) {
                 continue;
             }
-            coordinates.push_back(std::round((-92.5 * std::sin(angle * (M_PI / 180.0))) + (distance * std::cos((i + 90 - angle) * (M_PI / 180.0)))));
-            coordinates.push_back(std::round((-92.5 * std::cos(angle * (M_PI / 180.0))) + (distance * std::sin((i + 90 - angle) * (M_PI / 180.0)))));
+            coordinates.push_back(std::round(distance * std::cos((i + 90) * (M_PI / 180.0))));
+            coordinates.push_back(std::round((distance * std::sin((i + 90) * (M_PI / 180.0))) - 92.5));
             returnValue.push_back(coordinates);
         }
         std::getline(*this, input);
@@ -256,21 +256,32 @@ std::vector<std::vector<int>> BotvacController::getLidarScan() {
 // Method the get LIDAR map as an absolute x, y coordinate vector
 std::vector<std::vector<int>> BotvacController::getLidarMap() {
     if (IsOpen()) {
-        std::vector<std::vector<int>> scan = getLidarScan();
-        for (int i = 0; i < scan.size(); i++) {
+        *this << "GetLDSScan" << std::endl;
+        std::getline(*this, input);
+        std::getline(*this, input);
+        for (int i = 0; i < 360; i++) {
+            int distance;
+            std::vector<int> coordinates;
             bool uniqueCoordinates = true;
-            scan[i][0] += xCoordinate;
-            scan[i][1] += yCoordinate;
+            std::getline(*this, input);
+            input.erase(0, input.find(',') + 1);
+            distance = std::stoi(input.substr(0, input.find(',')));
+            if (distance > 6000 || distance == 0) {
+                continue;
+            }
+            coordinates.push_back(xCoordinate + std::round((-92.5 * std::sin(angle * (M_PI / 180.0))) + (distance * std::cos((i + 90 - angle) * (M_PI / 180.0)))));
+            coordinates.push_back(yCoordinate + std::round((-92.5 * std::cos(angle * (M_PI / 180.0))) + (distance * std::sin((i + 90 - angle) * (M_PI / 180.0)))));
             for (int j = 0; j < map.size(); j++) {
                 const int SIMILARITY_THRESHOLD = 40;
-                if ((scan[i][0] > map[j][0] - SIMILARITY_THRESHOLD && scan[i][0] < map[j][0] + SIMILARITY_THRESHOLD) && (scan[i][1] > map[j][1] - SIMILARITY_THRESHOLD && scan[i][1] < map[j][1] + SIMILARITY_THRESHOLD)) {
+                if ((coordinates[0] > map[j][0] - SIMILARITY_THRESHOLD && coordinates[0] < map[j][0] + SIMILARITY_THRESHOLD) && (coordinates[1] > map[j][1] - SIMILARITY_THRESHOLD && coordinates[1] < map[j][1] + SIMILARITY_THRESHOLD)) {
                     uniqueCoordinates = false;
                 }
             }
             if (uniqueCoordinates) {
-                map.push_back(scan[i]);
+                map.push_back(coordinates);
             }
         }
+        std::getline(*this, input);
     }
     return map;
 }

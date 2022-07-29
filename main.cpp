@@ -117,48 +117,28 @@ int main(int argc, char** argv) {
                 botvacController.turnSideBrushOff();
             }
         });
-        // Create a background function for updating the map and it's visualisation
-        Glib::signal_timeout().connect([&]() -> bool {
-            if (botvacController.IsOpen()) {
-                map = botvacController.getLidarMap();
-                if (!map.empty()) {
-                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
-                }
-                pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
-                rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
-                chargeData.set_label(std::to_string(botvacController.getCharge()));
-                leftMagnetData.set_label(std::to_string(botvacController.getLeftMagnetSensor()));
-                rightMagnetData.set_label(std::to_string(botvacController.getRightMagnetSensor()));
-                wallData.set_label(std::to_string(botvacController.getWallSensor()));
-                leftDropData.set_label(std::to_string(botvacController.getLeftDropSensor()));
-                rightDropData.set_label(std::to_string(botvacController.getRightDropSensor()));
-                leftWheelData.set_label(std::to_string(botvacController.isLeftWheelExtended()));
-                rightWheelData.set_label(std::to_string(botvacController.isRightWheelExtended()));
-                leftFrontData.set_label(std::to_string(botvacController.isLeftFrontBumperPressed()));
-                rightFrontData.set_label(std::to_string(botvacController.isRightFrontBumperPressed()));
-                leftSideData.set_label(std::to_string(botvacController.isLeftSideBumperPressed()));
-                rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
-            }
-            return true;
-        }, 2000);
-        // Create a background function for navigating the robot
+        // Create a background function for updating the map and it's visualisation as well as handling navigation
         Glib::signal_timeout().connect([&]() -> bool {
             if (botvacController.IsOpen()) {
                 int clickX = visualisation.getClickX();
                 int clickY = visualisation.getClickY();
+                map = botvacController.getLidarMap();
                 if (!map.empty() && path.empty() && clickX != -1 && clickY != -1) {
                     pathfinder.setMap(map);
                     path = pathfinder.findPath(botvacController.getX(), botvacController.getY(), clickX, clickY);
-                } else if (!path.empty()) {
+                }
+                if (!path.empty()) {
                     std::vector<int> coordinates = path[0];
                     int currentX = botvacController.getX();
                     int currentY = botvacController.getY();
                     int currentAngle = botvacController.getAngle();
-                    int distance = pathfinder.getSimplificationFactor();
+                    int distance = std::abs(coordinates[1] - currentY);
                     int angle = 0;
                     if (coordinates[0] < currentX) {
+                        distance = std::abs(coordinates[0] - currentX);
                         angle = 270;
                     } else if (coordinates[0] > currentX) {
+                        distance = std::abs(coordinates[0] - currentX);
                         angle = 90;
                     } else if (coordinates[1] < currentY) {
                         angle = 180;
@@ -168,10 +148,28 @@ int main(int argc, char** argv) {
                     }
                     botvacController.moveRobot(distance, 100);
                     path.erase(path.begin());
+                } else {
+                    if (!map.empty()) {
+                        visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                    }
+                    pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
+                    rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
+                    chargeData.set_label(std::to_string(botvacController.getCharge()));
+                    leftMagnetData.set_label(std::to_string(botvacController.getLeftMagnetSensor()));
+                    rightMagnetData.set_label(std::to_string(botvacController.getRightMagnetSensor()));
+                    wallData.set_label(std::to_string(botvacController.getWallSensor()));
+                    leftDropData.set_label(std::to_string(botvacController.getLeftDropSensor()));
+                    rightDropData.set_label(std::to_string(botvacController.getRightDropSensor()));
+                    leftWheelData.set_label(std::to_string(botvacController.isLeftWheelExtended()));
+                    rightWheelData.set_label(std::to_string(botvacController.isRightWheelExtended()));
+                    leftFrontData.set_label(std::to_string(botvacController.isLeftFrontBumperPressed()));
+                    rightFrontData.set_label(std::to_string(botvacController.isRightFrontBumperPressed()));
+                    leftSideData.set_label(std::to_string(botvacController.isLeftSideBumperPressed()));
+                    rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
                 }
             }
             return true;
-        }, 1000);
+        }, 2000);
         // Create the main grid
         grid.set_column_spacing(10);
         grid.set_row_spacing(10);

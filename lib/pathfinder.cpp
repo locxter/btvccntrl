@@ -110,13 +110,14 @@ std::vector<std::vector<int>> Pathfinder::findPath(int sourceX, int sourceY, int
     std::vector<Node*> openList;
     std::vector<Node*> closedList;
     std::vector<std::vector<int>> path;
+    std::vector<std::vector<int>> simplifiedPath;
     // Check for valid source and target
     sourceX = std::round((float) sourceX / simplificationFactor) - xMin;
     sourceY = std::round((float) sourceY / simplificationFactor) - yMin;
     targetX = std::round((float) targetX / simplificationFactor) - xMin;
     targetY = std::round((float) targetY / simplificationFactor) - yMin;
     if (detectCollision(sourceX, sourceY) || detectCollision(targetX, targetY)) {
-        return path;
+        return simplifiedPath;
     }
     // Initialize
     openList.push_back(new Node(sourceX, sourceY));
@@ -172,9 +173,16 @@ std::vector<std::vector<int>> Pathfinder::findPath(int sourceX, int sourceY, int
         path.insert(path.begin(), coordinates);
         current = current->predecessor;
     }
-    // Check for successful pathfinding 
-    if (path.back()[0] != (targetX + xMin) * simplificationFactor || path.back()[1] != (targetY + yMin) * simplificationFactor) {
-        path.clear();
+    // Simplify path to corners
+    for (int i = 1; i < path.size() - 1; i++) {
+        if ((path[i][0] == path[i - 1][0] && path[i][0] != path[i + 1][0]) || (path[i][1] == path[i - 1][1] && path[i][1] != path[i + 1][1])) {
+            simplifiedPath.push_back(path[i]);
+        }
     }
-    return path;
+    simplifiedPath.push_back(path.back());
+    // Check for successful pathfinding 
+    if (simplifiedPath.back()[0] != (targetX + xMin) * simplificationFactor || simplifiedPath.back()[1] != (targetY + yMin) * simplificationFactor) {
+        simplifiedPath.clear();
+    }
+    return simplifiedPath;
 }

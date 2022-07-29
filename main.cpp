@@ -163,11 +163,10 @@ int main(int argc, char** argv) {
                     } else if (coordinates[1] < currentY) {
                         angle = 180;
                     }
-                    if (currentAngle == angle) {
-                        botvacController.moveRobot(distance, 100);
-                    } else {
+                    if (currentAngle != angle) {
                         botvacController.rotateRobot(angle - currentAngle, 100);
                     }
+                    botvacController.moveRobot(distance, 100);
                     path.erase(path.begin());
                 }
             }

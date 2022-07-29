@@ -7,7 +7,7 @@
 
 // Botvac controller class
 class BotvacController : public LibSerial::SerialStream {
-private:
+    private:
     // Attributes
     std::string input;
     std::vector<std::vector<int>> map;
@@ -16,7 +16,7 @@ private:
     int angle = 0;
     int similarityThreshold = 0;
 
-public:
+    public:
     // Constructor
     BotvacController();
 

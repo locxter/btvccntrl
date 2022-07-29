@@ -3,11 +3,10 @@
 #include <iostream>
 #include <cmath>
 #include <gtkmm-3.0/gtkmm.h>
-#include <fstream> 
 
 // Visualisation class
 class Visualisation : public Gtk::DrawingArea {
-private:
+    private:
     // Attributes
     std::vector<std::vector<int>> map;
     int xMin;
@@ -25,13 +24,13 @@ private:
     // Helper method to transform an unscaled value to a scaled one
     int getScaledValue(int unscaledValue);
 
-protected:
+    protected:
     // Method to actually draw the visualisation
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& context) override;
     // Method to deal with mouse clicks
     bool on_button_press_event(GdkEventButton* event) override;
 
-public:
+    public:
     // Constructor
     Visualisation();
 

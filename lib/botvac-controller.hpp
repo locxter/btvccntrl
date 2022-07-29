@@ -1,5 +1,5 @@
-#ifndef LIBSERIAL_HELPERS
-#define LIBSERIAL_HELPERS
+#ifndef BOTVAC_CONTROLLER
+#define BOTVAC_CONTROLLER
 #include <iostream>
 #include <cmath>
 #include <unistd.h>
@@ -7,24 +7,27 @@
 
 // Botvac controller class
 class BotvacController : public LibSerial::SerialStream {
-    private:
+private:
     // Attributes
     std::string input;
     std::vector<std::vector<int>> map;
-    int xCoordinate = 0;
-    int yCoordinate = 0;
+    int x = 0;
+    int y = 0;
     int angle = 0;
+    int similarityThreshold = 0;
 
-    public:
+public:
     // Constructor
     BotvacController();
 
     // Getter
-    int getXCoordinate();
+    int getX();
 
-    int getYCoordinate();
+    int getY();
 
     int getAngle();
+
+    int getSimilarityThreshold();
 
     // Method to get pitch in degrees
     float getPitch();
@@ -73,6 +76,9 @@ class BotvacController : public LibSerial::SerialStream {
 
     // Method the get LIDAR scan as an absolute x, y coordinate vector
     std::vector<std::vector<int>> getLidarMap();
+
+    // Setter
+    void setSimilarityThreshold(int threshold);
 
     // Method to initialize the robot for further operation
     void initialize(std::string serialPort);

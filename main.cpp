@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream> 
 #include "lib/botvac-controller.hpp"
+#include "lib/pathfinder.hpp"
 #include "lib/visualisation.hpp"
 
 // Main function
@@ -10,7 +11,11 @@ int main(int argc, char** argv) {
         // Communication and navigation related variables
         const std::string SERIAL_PORT = argv[1];
         BotvacController botvacController;
+        Pathfinder pathfinder;
         std::vector<std::vector<int>> map;
+        std::vector<std::vector<int>> path;
+        botvacController.setSimilarityThreshold(60);
+        pathfinder.setSimplificationFactor(100);
         // UI components
         Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("com.github.locxter.btvccntrl");
         Gtk::Window window;
@@ -117,7 +122,7 @@ int main(int argc, char** argv) {
             if (botvacController.IsOpen()) {
                 map = botvacController.getLidarMap();
                 if (!map.empty()) {
-                    visualisation.showVisualisation(map, botvacController.getXCoordinate(), botvacController.getYCoordinate(), botvacController.getAngle());
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
                 }
                 pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
                 rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
@@ -136,6 +141,38 @@ int main(int argc, char** argv) {
             }
             return true;
         }, 2000);
+        // Create a background function for navigating the robot
+        Glib::signal_timeout().connect([&]() -> bool {
+            if (botvacController.IsOpen()) {
+                int clickX = visualisation.getClickX();
+                int clickY = visualisation.getClickY();
+                if (!map.empty() && path.empty() && clickX != -1 && clickY != -1) {
+                    pathfinder.setMap(map);
+                    path = pathfinder.findPath(botvacController.getX(), botvacController.getY(), clickX, clickY);
+                } else if (!path.empty()) {
+                    std::vector<int> coordinates = path[0];
+                    int currentX = botvacController.getX();
+                    int currentY = botvacController.getY();
+                    int currentAngle = botvacController.getAngle();
+                    int distance = pathfinder.getSimplificationFactor();
+                    int angle = 0;
+                    if (coordinates[0] < currentX) {
+                        angle = 270;
+                    } else if (coordinates[0] > currentX) {
+                        angle = 90;
+                    } else if (coordinates[1] < currentY) {
+                        angle = 180;
+                    }
+                    if (currentAngle == angle) {
+                        botvacController.moveRobot(distance, 100);
+                    } else {
+                        botvacController.rotateRobot(angle - currentAngle, 100);
+                    }
+                    path.erase(path.begin());
+                }
+            }
+            return true;
+        }, 1000);
         // Create the main grid
         grid.set_column_spacing(10);
         grid.set_row_spacing(10);

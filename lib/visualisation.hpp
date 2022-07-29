@@ -1,35 +1,46 @@
-#ifndef VISUALISATION_HELPERS
-#define VISUALISATION_HELPERS
+#ifndef VISUALISATION
+#define VISUALISATION
 #include <iostream>
 #include <cmath>
 #include <gtkmm-3.0/gtkmm.h>
+#include <fstream> 
 
 // Visualisation class
 class Visualisation : public Gtk::DrawingArea {
-    private:
+private:
     // Attributes
     std::vector<std::vector<int>> map;
-    int xCoordinate = 0;
-    int yCoordinate = 0;
-    int angle = 0;
+    int xMin;
+    int xMax;
+    int yMin;
+    int yMax;
+    int x;
+    int y;
+    int angle;
+    int clickX = -1;
+    int clickY = -1;
     float scalingRatio;
     bool showStartScreen = true;
-    int xRange;
-    int yRange;
-    int maxRange;
 
     // Helper method to transform an unscaled value to a scaled one
     int getScaledValue(int unscaledValue);
 
-    protected:
+protected:
     // Method to actually draw the visualisation
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& context) override;
+    // Method to deal with mouse clicks
+    bool on_button_press_event(GdkEventButton* event) override;
 
-    public:
+public:
     // Constructor
     Visualisation();
 
+    // Getter
+    int getClickX();
+
+    int getClickY();
+
     // Method to update the visualisation
-    void showVisualisation(std::vector<std::vector<int>> map, int xCoordinate, int yCoordinate, int angle);
+    void showVisualisation(std::vector<std::vector<int>> map, int x, int y, int angle);
 };
 #endif

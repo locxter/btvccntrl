@@ -6,16 +6,20 @@ BotvacController::BotvacController() : LibSerial::SerialStream() {
 }
 
 // Getter
-int BotvacController::getXCoordinate() {
-    return xCoordinate;
+int BotvacController::getX() {
+    return x;
 }
 
-int BotvacController::getYCoordinate() {
-    return yCoordinate;
+int BotvacController::getY() {
+    return y;
 }
 
 int BotvacController::getAngle() {
     return angle;
+}
+
+int BotvacController::getSimilarityThreshold() {
+    return similarityThreshold;
 }
 
 // Method to get pitch in degrees
@@ -262,28 +266,35 @@ std::vector<std::vector<int>> BotvacController::getLidarMap() {
         for (int i = 0; i < 360; i++) {
             int distance;
             std::vector<int> coordinates;
-            bool uniqueCoordinates = true;
+            bool unique = true;
             std::getline(*this, input);
             input.erase(0, input.find(',') + 1);
             distance = std::stoi(input.substr(0, input.find(',')));
             if (distance > 6000 || distance == 0) {
                 continue;
             }
-            coordinates.push_back(xCoordinate + std::round((-92.5 * std::sin(angle * (M_PI / 180.0))) + (distance * std::cos((i + 90 - angle) * (M_PI / 180.0)))));
-            coordinates.push_back(yCoordinate + std::round((-92.5 * std::cos(angle * (M_PI / 180.0))) + (distance * std::sin((i + 90 - angle) * (M_PI / 180.0)))));
+            coordinates.push_back(std::round((distance * std::cos((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::sin(angle * (M_PI / 180.0)))) + x);
+            coordinates.push_back(std::round((distance * std::sin((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::cos(angle * (M_PI / 180.0)))) + y);
             for (int j = 0; j < map.size(); j++) {
-                const int SIMILARITY_THRESHOLD = 40;
-                if ((coordinates[0] > map[j][0] - SIMILARITY_THRESHOLD && coordinates[0] < map[j][0] + SIMILARITY_THRESHOLD) && (coordinates[1] > map[j][1] - SIMILARITY_THRESHOLD && coordinates[1] < map[j][1] + SIMILARITY_THRESHOLD)) {
-                    uniqueCoordinates = false;
+                if (coordinates[0] >= map[j][0] - similarityThreshold && coordinates[0] <= map[j][0] + similarityThreshold && coordinates[1] >= map[j][1] - similarityThreshold && coordinates[1] <= map[j][1] + similarityThreshold) {
+                    unique = false;
                 }
             }
-            if (uniqueCoordinates) {
+            if (unique) {
                 map.push_back(coordinates);
             }
         }
         std::getline(*this, input);
     }
     return map;
+}
+
+// Setter
+void BotvacController::setSimilarityThreshold(int threshold) {
+    if (threshold < 0) {
+        threshold = 0;
+    }
+    similarityThreshold = threshold;
 }
 
 // Method to initialize the robot for further operation
@@ -315,8 +326,8 @@ void BotvacController::disconnect() {
         //*this << "SetSystemMode Shutdown" << std::endl;
         //std::getline(*this, input);
         Close();
-        xCoordinate = 0;
-        yCoordinate = 0;
+        x = 0;
+        y = 0;
         angle = 0;
         map.clear();
     }
@@ -337,8 +348,8 @@ void BotvacController::moveRobot(int distance, int speed) {
         }
         *this << "SetMotor LWheelDist " << distance << " RWheelDist " << distance << " Speed " << speed << std::endl;
         std::getline(*this, input);
-        xCoordinate += std::round(distance * std::sin(angle * (M_PI / 180.0)));
-        yCoordinate += std::round(distance * std::cos(angle * (M_PI / 180.0)));
+        x += std::round(distance * std::sin(angle * (M_PI / 180.0)));
+        y += std::round(distance * std::cos(angle * (M_PI / 180.0)));
         sleep(std::ceil(std::abs(distance) / (float) speed) + 1);
     }
 }
@@ -359,7 +370,7 @@ void BotvacController::rotateRobot(int angle, int speed) {
         distance = std::round(angle * ((245.0 * M_PI) / 360));
         *this << "SetMotor LWheelDist " << distance << " RWheelDist " << (-1 * distance) << " Speed " << speed << std::endl;
         std::getline(*this, input);
-        this->angle += angle;
+        this->angle = (this->angle + angle + 360) % 360;
         sleep(std::ceil(std::abs(distance) / (float) speed) + 1);
     }
 }

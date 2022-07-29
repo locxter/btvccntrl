@@ -148,25 +148,24 @@ int main(int argc, char** argv) {
                     }
                     botvacController.moveRobot(distance, 100);
                     path.erase(path.begin());
-                } else {
-                    if (!map.empty()) {
-                        visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
-                    }
-                    pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
-                    rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
-                    chargeData.set_label(std::to_string(botvacController.getCharge()));
-                    leftMagnetData.set_label(std::to_string(botvacController.getLeftMagnetSensor()));
-                    rightMagnetData.set_label(std::to_string(botvacController.getRightMagnetSensor()));
-                    wallData.set_label(std::to_string(botvacController.getWallSensor()));
-                    leftDropData.set_label(std::to_string(botvacController.getLeftDropSensor()));
-                    rightDropData.set_label(std::to_string(botvacController.getRightDropSensor()));
-                    leftWheelData.set_label(std::to_string(botvacController.isLeftWheelExtended()));
-                    rightWheelData.set_label(std::to_string(botvacController.isRightWheelExtended()));
-                    leftFrontData.set_label(std::to_string(botvacController.isLeftFrontBumperPressed()));
-                    rightFrontData.set_label(std::to_string(botvacController.isRightFrontBumperPressed()));
-                    leftSideData.set_label(std::to_string(botvacController.isLeftSideBumperPressed()));
-                    rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
                 }
+                if (!map.empty()) {
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                }
+                pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
+                rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
+                chargeData.set_label(std::to_string(botvacController.getCharge()));
+                leftMagnetData.set_label(std::to_string(botvacController.getLeftMagnetSensor()));
+                rightMagnetData.set_label(std::to_string(botvacController.getRightMagnetSensor()));
+                wallData.set_label(std::to_string(botvacController.getWallSensor()));
+                leftDropData.set_label(std::to_string(botvacController.getLeftDropSensor()));
+                rightDropData.set_label(std::to_string(botvacController.getRightDropSensor()));
+                leftWheelData.set_label(std::to_string(botvacController.isLeftWheelExtended()));
+                rightWheelData.set_label(std::to_string(botvacController.isRightWheelExtended()));
+                leftFrontData.set_label(std::to_string(botvacController.isLeftFrontBumperPressed()));
+                rightFrontData.set_label(std::to_string(botvacController.isRightFrontBumperPressed()));
+                leftSideData.set_label(std::to_string(botvacController.isLeftSideBumperPressed()));
+                rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
             }
             return true;
         }, 2000);

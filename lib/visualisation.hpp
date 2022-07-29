@@ -9,15 +9,15 @@ class Visualisation : public Gtk::DrawingArea {
     private:
     // Attributes
     std::vector<std::vector<int>> map;
-    int xMin;
-    int xMax;
-    int yMin;
-    int yMax;
     int x;
     int y;
     int angle;
     int clickX = -1;
     int clickY = -1;
+    int xMin;
+    int xMax;
+    int yMin;
+    int yMax;
     float scalingRatio;
     bool showStartScreen = true;
 

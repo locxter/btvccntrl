@@ -72,6 +72,7 @@ int main(int argc, char** argv) {
                 std::string completeFilename = "map-" + std::to_string(counter) + ".csv";
                 std::ofstream outputFile;
                 botvacController.disconnect();
+                // Write map to CSV file
                 testFile.open(completeFilename);
                 while (testFile.is_open()) {
                     testFile.close();
@@ -123,10 +124,12 @@ int main(int argc, char** argv) {
                 int clickX = visualisation.getClickX();
                 int clickY = visualisation.getClickY();
                 map = botvacController.getLidarMap();
+                // Plan path if wanted
                 if (!map.empty() && path.empty() && clickX != -1 && clickY != -1) {
                     pathfinder.setMap(map);
                     path = pathfinder.findPath(botvacController.getX(), botvacController.getY(), clickX, clickY);
                 }
+                // Follow path if possible
                 if (!path.empty()) {
                     std::vector<int> coordinates = path[0];
                     int currentX = botvacController.getX();
@@ -149,6 +152,7 @@ int main(int argc, char** argv) {
                     botvacController.moveRobot(distance, 100);
                     path.erase(path.begin());
                 }
+                // Update visualisation and other data
                 if (!map.empty()) {
                     visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
                 }
@@ -166,6 +170,9 @@ int main(int argc, char** argv) {
                 rightFrontData.set_label(std::to_string(botvacController.isRightFrontBumperPressed()));
                 leftSideData.set_label(std::to_string(botvacController.isLeftSideBumperPressed()));
                 rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
+                while (Gtk::Main::events_pending()) {
+                    Gtk::Main::iteration();
+                }
             }
             return true;
         }, 2000);

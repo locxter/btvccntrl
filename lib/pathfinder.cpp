@@ -52,7 +52,7 @@ int Pathfinder::getSimplificationFactor() {
 // Setter
 void Pathfinder::setMap(std::vector<std::vector<int>> map) {
     std::vector<std::vector<int>> uniqueCoordinates;
-    // simplify and filter duplicates
+    // Simplify map and filter newly created duplicates
     for (int i = 0; i < map.size(); i++) {
         map[i][0] = std::round((float) map[i][0] / simplificationFactor);
         map[i][1] = std::round((float) map[i][1] / simplificationFactor);

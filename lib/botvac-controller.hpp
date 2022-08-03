@@ -1,26 +1,43 @@
 #ifndef BOTVAC_CONTROLLER
 #define BOTVAC_CONTROLLER
 #include <iostream>
+#include <sstream>
 #include <cmath>
 #include <unistd.h>
 #include <libserial/SerialStream.h>
+#include <curlpp/Easy.hpp>
+#include <curlpp/Options.hpp>
 
 // Botvac controller class
-class BotvacController : public LibSerial::SerialStream {
+class BotvacController {
     private:
     // Attributes
-    std::string input;
+    bool connected = false;
+    bool useNetwork = false;
+    std::string device;
+    LibSerial::SerialStream serial;
+    curlpp::Easy network;
+    std::stringstream response;
     std::vector<std::vector<int>> map;
     int x = 0;
     int y = 0;
     int angle = 0;
     int similarityThreshold = 0;
 
+    // Helper method send commands and receive responses the same way regardless of the connection mode
+    void sendCommand(std::string command);
+
     public:
-    // Constructor
+    // Constructors
     BotvacController();
 
+    BotvacController(std::string device, bool useNetwork = false);
+
     // Getter
+    bool isConnected();
+
+    bool usesNetwork();
+
     int getX();
 
     int getY();
@@ -80,8 +97,8 @@ class BotvacController : public LibSerial::SerialStream {
     // Setter
     void setSimilarityThreshold(int threshold);
 
-    // Method to initialize the robot for further operation
-    void initialize(std::string serialPort);
+    // Method to connect to the robot
+    void connect(std::string device, bool useNetwork = false);
 
     // Method to disconnect the robot
     void disconnect();

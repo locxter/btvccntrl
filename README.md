@@ -13,6 +13,7 @@ I generally try to minimize dependencies, but I'm a one man crew and can therefo
 - GCC, G++, GDB and CMake for building the C++ code. Install them with `sudo apt install build-essential gdb cmake`.
 - gtkmm as the used GUI toolkit. Install it with `sudo apt install libgtkmm-3.0-dev`.
 - LibSerial as the used serial communication library. Install it with `sudo apt install libserial-dev`.
+- cURLpp as the used network communication library. Install it with `sudo apt install curl libcurlpp-dev`.
 
 ## How to use it
 

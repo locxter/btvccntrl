@@ -7,9 +7,11 @@
 // Main function
 int main(int argc, char** argv) {
     // Check for the right number of command line arguments
-    if (argc == 2) {
+    if (argc == 3) {
         // Communication and navigation related variables
-        const std::string SERIAL_PORT = argv[1];
+        const bool USE_NETWORK = std::string(argv[1]) == "network";
+        const std::string DEVICE = argv[2];
+        const int INTERVAL = USE_NETWORK ? 4000 : 2000;
         BotvacController botvacController;
         Pathfinder pathfinder;
         std::vector<std::vector<int>> map;
@@ -63,8 +65,8 @@ int main(int argc, char** argv) {
         Gtk::Label aboutLabel("2022 locxter");
         // Add functions to the buttons and inputs
         connectButton.signal_clicked().connect([&]() {
-            if (!botvacController.IsOpen()) {
-                botvacController.initialize(SERIAL_PORT);
+            if (!botvacController.isConnected()) {
+                botvacController.connect(DEVICE, USE_NETWORK);
                 connectButton.set_label("Disconnect");
             } else {
                 std::ifstream testFile;
@@ -94,7 +96,7 @@ int main(int argc, char** argv) {
             }
         });
         forwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(200, 100);
+            botvacController.moveRobot(500, 100);
         });
         leftButton.signal_clicked().connect([&]() {
             botvacController.rotateRobot(-90, 100);
@@ -103,7 +105,7 @@ int main(int argc, char** argv) {
             botvacController.rotateRobot(90, 100);
         });
         backwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(-200, 100);
+            botvacController.moveRobot(-500, 100);
         });
         brushInput.signal_value_changed().connect([&]() {
             botvacController.controlBrush(std::round(brushInput.get_value()));
@@ -120,23 +122,23 @@ int main(int argc, char** argv) {
         });
         // Create a background function for updating the map and it's visualisation as well as handling navigation
         Glib::signal_timeout().connect([&]() -> bool {
-            if (botvacController.IsOpen()) {
+            if (botvacController.isConnected()) {
+                int currentX = botvacController.getX();
+                int currentY = botvacController.getY();
                 int clickX = visualisation.getClickX();
                 int clickY = visualisation.getClickY();
                 map = botvacController.getLidarMap();
                 // Plan path if wanted
                 if (!map.empty() && path.empty() && clickX != -1 && clickY != -1) {
                     pathfinder.setMap(map);
-                    path = pathfinder.findPath(botvacController.getX(), botvacController.getY(), clickX, clickY);
+                    path = pathfinder.findPath(currentX, currentY, clickX, clickY);
                 }
                 // Follow path if possible
                 if (!path.empty()) {
                     std::vector<int> coordinates = path[0];
-                    int currentX = botvacController.getX();
-                    int currentY = botvacController.getY();
                     int currentAngle = botvacController.getAngle();
-                    int distance = std::abs(coordinates[1] - currentY);
                     int angle = 0;
+                    int distance = std::abs(coordinates[1] - currentY);
                     if (coordinates[0] < currentX) {
                         distance = std::abs(coordinates[0] - currentX);
                         angle = 270;
@@ -175,7 +177,7 @@ int main(int argc, char** argv) {
                 }
             }
             return true;
-        }, 2000);
+        }, INTERVAL);
         // Create the main grid
         grid.set_column_spacing(10);
         grid.set_row_spacing(10);
@@ -283,8 +285,8 @@ int main(int argc, char** argv) {
         return app->run(window);
     } else {
         // Throw an error on invalid number of command line arguments
-        std::cout << "Wrong number of arguments. One argument containing the serial port expected." << std::endl;
-        std::cout << "Example: " << argv[0] << " /dev/ttyACM0" << std::endl;
+        std::cout << "Wrong number of arguments. Two arguments containing the connection mode (serial or network) and device expected." << std::endl;
+        std::cout << "Example: " << argv[0] << " serial /dev/ttyACM0" << std::endl;
         return 1;
     }
 }

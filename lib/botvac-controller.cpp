@@ -3,6 +3,7 @@
 // Helper method send commands and receive responses the same way regardless of the connection mode
 void BotvacController::sendCommand(std::string command) {
     std::stringstream empty;
+    std::string line;
     response.swap(empty);
     if (useNetwork) {
         try {
@@ -11,17 +12,17 @@ void BotvacController::sendCommand(std::string command) {
             network.setOpt(new curlpp::options::HttpPost(formParts));
             response << network;
         } catch (...) {
-            std::cout << "Data transfer failed for command: " << command << std::endl;
+            std::cout << "Did not receive a response for command: " << command << std::endl;
         }
     } else {
         char character;
-        std::string line;
+
         serial << command << std::endl;
-        std::getline(serial, line);
         while ((character = serial.get()) != '\x1a') {
             response << character;
         }
     }
+    std::getline(response, line);
 }
 
 // Constructors

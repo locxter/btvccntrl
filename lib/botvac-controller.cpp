@@ -13,10 +13,10 @@ void BotvacController::sendCommand(std::string command) {
             response << network;
         } catch (...) {
             std::cout << "Did not receive a response for command: " << command << std::endl;
+            std::exit(1);
         }
     } else {
         char character;
-
         serial << command << std::endl;
         while ((character = serial.get()) != '\x1a') {
             response << character;
@@ -57,8 +57,12 @@ int BotvacController::getAngle() {
     return angle;
 }
 
-int BotvacController::getSimilarityThreshold() {
-    return similarityThreshold;
+int BotvacController::getMinPointDistance() {
+    return minPointDistance;
+}
+
+int BotvacController::getInaccuracyFilterRatio() {
+    return inaccuracyFilterRatio;
 }
 
 // Method to get pitch in degrees
@@ -319,6 +323,7 @@ std::vector<std::vector<int>> BotvacController::getLidarMap() {
         for (int i = 0; i < 360; i++) {
             int distance;
             std::vector<int> coordinates;
+            int distanceToRobot;
             bool unique = true;
             std::getline(response, line);
             line.erase(0, line.find(',') + 1);
@@ -328,8 +333,9 @@ std::vector<std::vector<int>> BotvacController::getLidarMap() {
             }
             coordinates.push_back(std::round((distance * std::cos((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::sin(angle * (M_PI / 180.0)))) + x);
             coordinates.push_back(std::round((distance * std::sin((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::cos(angle * (M_PI / 180.0)))) + y);
+            distanceToRobot = std::round(std::sqrt(std::pow(coordinates[0] - x, 2) + std::pow(coordinates[1] - y, 2)));
             for (int j = 0; j < map.size(); j++) {
-                if (coordinates[0] >= map[j][0] - similarityThreshold && coordinates[0] <= map[j][0] + similarityThreshold && coordinates[1] >= map[j][1] - similarityThreshold && coordinates[1] <= map[j][1] + similarityThreshold) {
+                if (coordinates[0] >= map[j][0] - (minPointDistance + (distanceToRobot * inaccuracyFilterRatio)) && coordinates[0] <= map[j][0] + (minPointDistance + (distanceToRobot * inaccuracyFilterRatio)) && coordinates[1] >= map[j][1] - (minPointDistance + (distanceToRobot * inaccuracyFilterRatio)) && coordinates[1] <= map[j][1] + (minPointDistance + (distanceToRobot * inaccuracyFilterRatio))) {
                     unique = false;
                 }
             }
@@ -343,11 +349,18 @@ std::vector<std::vector<int>> BotvacController::getLidarMap() {
 }
 
 // Setter
-void BotvacController::setSimilarityThreshold(int threshold) {
-    if (threshold < 0) {
-        threshold = 0;
+void BotvacController::setMinPointDistance(int distance) {
+    if (distance < 0) {
+        distance = 0;
     }
-    similarityThreshold = threshold;
+    minPointDistance = distance;
+}
+
+void BotvacController::setInaccuracyFilterRatio(float ratio) {
+    if (ratio < 0) {
+        ratio = 0;
+    }
+    inaccuracyFilterRatio = ratio;
 }
 
 // Method to connect to the robot

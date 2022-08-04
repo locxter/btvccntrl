@@ -16,7 +16,8 @@ int main(int argc, char** argv) {
         Pathfinder pathfinder;
         std::vector<std::vector<int>> map;
         std::vector<std::vector<int>> path;
-        botvacController.setSimilarityThreshold(60);
+        botvacController.setMinPointDistance(50);
+        botvacController.setInaccuracyFilterRatio(0.01);
         pathfinder.setSimplificationFactor(100);
         // UI components
         Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("com.github.locxter.btvccntrl");

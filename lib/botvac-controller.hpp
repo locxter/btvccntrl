@@ -22,7 +22,8 @@ class BotvacController {
     int x = 0;
     int y = 0;
     int angle = 0;
-    int similarityThreshold = 0;
+    int minPointDistance = 0;
+    float inaccuracyFilterRatio = 0;
 
     // Helper method send commands and receive responses the same way regardless of the connection mode
     void sendCommand(std::string command);
@@ -44,7 +45,9 @@ class BotvacController {
 
     int getAngle();
 
-    int getSimilarityThreshold();
+    int getMinPointDistance();
+
+    int getInaccuracyFilterRatio();
 
     // Method to get pitch in degrees
     float getPitch();
@@ -95,7 +98,9 @@ class BotvacController {
     std::vector<std::vector<int>> getLidarMap();
 
     // Setter
-    void setSimilarityThreshold(int threshold);
+    void setMinPointDistance(int distance);
+
+    void setInaccuracyFilterRatio(float ratio);
 
     // Method to connect to the robot
     void connect(std::string device, bool useNetwork = false);

@@ -323,7 +323,7 @@ std::vector<std::vector<int>> BotvacController::getLidarMap() {
         for (int i = 0; i < 360; i++) {
             int distance;
             std::vector<int> coordinates;
-            int distanceToRobot;
+            int inaccuracyFilter;
             bool unique = true;
             std::getline(response, line);
             line.erase(0, line.find(',') + 1);
@@ -333,9 +333,9 @@ std::vector<std::vector<int>> BotvacController::getLidarMap() {
             }
             coordinates.push_back(std::round((distance * std::cos((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::sin(angle * (M_PI / 180.0)))) + x);
             coordinates.push_back(std::round((distance * std::sin((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::cos(angle * (M_PI / 180.0)))) + y);
-            distanceToRobot = std::round(std::sqrt(std::pow(coordinates[0] - x, 2) + std::pow(coordinates[1] - y, 2)));
+            inaccuracyFilter = std::round(std::sqrt(std::pow(coordinates[0] - x, 2) + std::pow(coordinates[1] - y, 2)) * inaccuracyFilterRatio);
             for (int j = 0; j < map.size(); j++) {
-                if (coordinates[0] >= map[j][0] - (minPointDistance + (distanceToRobot * inaccuracyFilterRatio)) && coordinates[0] <= map[j][0] + (minPointDistance + (distanceToRobot * inaccuracyFilterRatio)) && coordinates[1] >= map[j][1] - (minPointDistance + (distanceToRobot * inaccuracyFilterRatio)) && coordinates[1] <= map[j][1] + (minPointDistance + (distanceToRobot * inaccuracyFilterRatio))) {
+                if (coordinates[0] >= map[j][0] - (minPointDistance + inaccuracyFilter) && coordinates[0] <= map[j][0] + (minPointDistance + inaccuracyFilter) && coordinates[1] >= map[j][1] - (minPointDistance + inaccuracyFilter) && coordinates[1] <= map[j][1] + (minPointDistance + inaccuracyFilter)) {
                     unique = false;
                 }
             }

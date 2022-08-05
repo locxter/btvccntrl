@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
         // Communication and navigation related variables
         const bool USE_NETWORK = std::string(argv[1]) == "network";
         const std::string DEVICE = argv[2];
-        const int INTERVAL = USE_NETWORK ? 4000 : 2000;
+        const int INTERVAL = USE_NETWORK ? 4 : 2;
         BotvacController botvacController;
         Pathfinder pathfinder;
         std::vector<std::vector<int>> map;
@@ -98,15 +98,27 @@ int main(int argc, char** argv) {
         });
         forwardButton.signal_clicked().connect([&]() {
             botvacController.moveRobot(500, 100);
+            if (!map.empty()) {
+                visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+            }
         });
         leftButton.signal_clicked().connect([&]() {
             botvacController.rotateRobot(-90, 100);
+            if (!map.empty()) {
+                visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+            }
         });
         rightButton.signal_clicked().connect([&]() {
             botvacController.rotateRobot(90, 100);
+            if (!map.empty()) {
+                visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+            }
         });
         backwardButton.signal_clicked().connect([&]() {
             botvacController.moveRobot(-500, 100);
+            if (!map.empty()) {
+                visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+            }
         });
         brushInput.signal_value_changed().connect([&]() {
             botvacController.controlBrush(std::round(brushInput.get_value()));
@@ -122,7 +134,7 @@ int main(int argc, char** argv) {
             }
         });
         // Create a background function for updating the map and it's visualisation as well as handling navigation
-        Glib::signal_timeout().connect([&]() -> bool {
+        Glib::signal_timeout().connect_seconds([&]() -> bool {
             if (botvacController.isConnected()) {
                 int currentX = botvacController.getX();
                 int currentY = botvacController.getY();
@@ -151,6 +163,10 @@ int main(int argc, char** argv) {
                     }
                     if (currentAngle != angle) {
                         botvacController.rotateRobot(angle - currentAngle, 100);
+                        visualisation.showVisualisation(map, currentX, currentY, angle);
+                        while (Gtk::Main::events_pending()) {
+                            Gtk::Main::iteration();
+                        }
                     }
                     botvacController.moveRobot(distance, 100);
                     path.erase(path.begin());
@@ -158,6 +174,9 @@ int main(int argc, char** argv) {
                 // Update visualisation and other data
                 if (!map.empty()) {
                     visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                    while (Gtk::Main::events_pending()) {
+                        Gtk::Main::iteration();
+                    }
                 }
                 pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
                 rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
@@ -173,9 +192,6 @@ int main(int argc, char** argv) {
                 rightFrontData.set_label(std::to_string(botvacController.isRightFrontBumperPressed()));
                 leftSideData.set_label(std::to_string(botvacController.isLeftSideBumperPressed()));
                 rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
-                while (Gtk::Main::events_pending()) {
-                    Gtk::Main::iteration();
-                }
             }
             return true;
         }, INTERVAL);

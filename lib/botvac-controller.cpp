@@ -430,7 +430,7 @@ void BotvacController::moveRobot(int distance, int speed) {
         sendCommand("SetMotor LWheelDist " + std::to_string(distance) + " RWheelDist " + std::to_string(distance) + " Speed " + std::to_string(speed));
         x += std::round(distance * std::sin(angle * (M_PI / 180.0)));
         y += std::round(distance * std::cos(angle * (M_PI / 180.0)));
-        sleep(std::ceil(std::abs(distance) / (float) speed) + 1);
+        sleep(std::ceil(std::abs(distance) / (float) speed));
     }
 }
 
@@ -451,7 +451,7 @@ void BotvacController::rotateRobot(int angle, int speed) {
         distance = std::round(angle * ((245.0 * M_PI) / 360));
         sendCommand("SetMotor LWheelDist " + std::to_string(distance) + " RWheelDist " + std::to_string(-1 * distance) + " Speed " + std::to_string(speed));
         this->angle = (this->angle + angle + 360) % 360;
-        sleep(std::ceil(std::abs(distance) / (float) speed) + 1);
+        sleep(std::ceil(std::abs(distance) / (float) speed));
     }
 }
 
@@ -466,7 +466,6 @@ void BotvacController::controlBrush(int rpm) {
         }
         sendCommand("SetMotor Brush RPM " + std::to_string(rpm));
         std::getline(response, line);
-        sleep(1);
     }
 }
 
@@ -481,7 +480,6 @@ void BotvacController::controlVacuum(int dutyCycle) {
         }
         sendCommand("SetMotor VacuumOn VacuumSpeed " + std::to_string(dutyCycle));
         std::getline(response, line);
-        sleep(1);
     }
 }
 
@@ -491,7 +489,6 @@ void BotvacController::turnSideBrushOn() {
         std::string line;
         sendCommand("SetMotor SideBrushOn SideBrushPower 5000");
         std::getline(response, line);
-        sleep(1);
     }
 }
 
@@ -501,6 +498,5 @@ void BotvacController::turnSideBrushOff() {
         std::string line;
         sendCommand("SetMotor SideBrushOff");
         std::getline(response, line);
-        sleep(1);
     }
 }

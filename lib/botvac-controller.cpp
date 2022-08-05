@@ -393,7 +393,11 @@ void BotvacController::connect(std::string device, bool useNetwork) {
 // Method to disconnect the robot
 void BotvacController::disconnect() {
     if (connected) {
-        //sendCommand("SetSystemMode Shutdown");
+        sendCommand("SetLED BacklightOn");
+        sendCommand("SetLED ButtonOn");
+        sendCommand("SetLED SpotOn");
+        sendCommand("SetLDSRotation Off");
+        sendCommand("TestMode Off");
         if (useNetwork) {
             network.reset();
         } else {

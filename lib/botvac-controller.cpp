@@ -394,7 +394,7 @@ void BotvacController::connect(std::string device, bool useNetwork) {
 void BotvacController::disconnect() {
     if (connected) {
         sendCommand("SetLED BacklightOn");
-        sendCommand("SetLED ButtonOn");
+        sendCommand("SetLED ButtonGreen");
         sendCommand("SetLED SpotOn");
         sendCommand("SetLDSRotation Off");
         sendCommand("TestMode Off");

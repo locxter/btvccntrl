@@ -18,6 +18,21 @@ class BotvacController {
     LibSerial::SerialStream serial;
     curlpp::Easy network;
     std::stringstream response;
+    float pitch = 0;
+    float roll = 0;
+    int charge = 0;
+    int leftMagnetStrength = 0;
+    int rightMagnetStrength = 0;
+    int wallDistance = 0;
+    int leftDropDistance = 0;
+    int rightDropDistance = 0;
+    bool leftWheelExtended = false;
+    bool rightWheelExtended = false;
+    bool leftFrontBumperPressed = false;
+    bool rightFrontBumperPressed = false;
+    bool leftSideBumperPressed = false;
+    bool rightSideBumperPressed = false;
+    std::vector<std::vector<int>> scan;
     std::vector<std::vector<int>> map;
     int x = 0;
     int y = 0;
@@ -39,6 +54,40 @@ class BotvacController {
 
     bool usesNetwork();
 
+    float getPitch();
+
+    float getRoll();
+
+    int getCharge();
+
+    int getLeftMagnetStrength();
+
+    int getRightMagnetStrength();
+
+    int getWallDistance();
+
+    int getLeftDropDistance();
+
+    int getRightDropDistance();
+
+    bool isLeftWheelExtended();
+
+    bool isRightWheelExtended();
+
+    bool isLeftFrontBumperPressed();
+
+    bool isRightFrontBumperPressed();
+
+    bool isLeftSideBumperPressed();
+
+    bool isRightSideBumperPressed();
+
+    // Method the get LIDAR scan as a relative x, y coordinate vector
+    std::vector<std::vector<int>> getLidarScan();
+
+    // Method the get LIDAR map as an absolute x, y coordinate vector
+    std::vector<std::vector<int>> getLidarMap();
+
     int getX();
 
     int getY();
@@ -48,54 +97,6 @@ class BotvacController {
     int getMinPointDistance();
 
     int getInaccuracyFilterRatio();
-
-    // Method to get pitch in degrees
-    float getPitch();
-
-    // Method to get roll in degrees
-    float getRoll();
-
-    // Method to get charge in percent
-    int getCharge();
-
-    // Method to get left magnet sensor reading
-    int getLeftMagnetSensor();
-
-    // Method to get right magnet sensor reading
-    int getRightMagnetSensor();
-
-    // Method to get wall sensor distance in mm
-    int getWallSensor();
-
-    // Method to get left drop sensor distance in mm
-    int getLeftDropSensor();
-
-    // Method to get right drop sensor distance in mm
-    int getRightDropSensor();
-
-    // Method to check whether the left wheel is extended
-    bool isLeftWheelExtended();
-
-    // Method to check whether the left wheel is extended
-    bool isRightWheelExtended();
-
-    // Method to check whether the left front bumper is extended
-    bool isLeftFrontBumperPressed();
-
-    // Method to check whether the right front bumper is extended
-    bool isRightFrontBumperPressed();
-
-    // Method to check whether the left side bumper is extended
-    bool isLeftSideBumperPressed();
-
-    // Method to check whether the right side bumper is extended
-    bool isRightSideBumperPressed();
-
-    // Method the get LIDAR scan as a relative x, y coordinate vector
-    std::vector<std::vector<int>> getLidarScan();
-
-    // Method the get LIDAR scan as an absolute x, y coordinate vector
-    std::vector<std::vector<int>> getLidarMap();
 
     // Setter
     void setMinPointDistance(int distance);
@@ -107,6 +108,21 @@ class BotvacController {
 
     // Method to disconnect the robot
     void disconnect();
+
+    // Method to update the accelerometer data
+    void updateAccelerometer();
+
+    // Method to update the charge data
+    void updateCharge();
+
+    // Method to update the analog sensor data
+    void updateAnalogSensors();
+
+    // Method to update the digital sensor data
+    void updateDigitalSensors();
+
+    // Method to update the LIDAR data
+    void updateLidar();
 
     // Method to move the robot
     void moveRobot(int distance, int speed);

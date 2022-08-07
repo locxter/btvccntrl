@@ -12,7 +12,7 @@ void BotvacController::sendCommand(std::string command) {
             network.setOpt(new curlpp::options::HttpPost(formParts));
             response << network;
         } catch (...) {
-            std::cout << "Did not receive a response for command: " << command << std::endl;
+            std::cout << "Robot failed to execute the command " << command << '.' << std::endl;
             std::exit(1);
         }
     } else {
@@ -44,6 +44,71 @@ bool BotvacController::usesNetwork() {
     return useNetwork;
 }
 
+float BotvacController::getPitch() {
+    return pitch;
+}
+
+float BotvacController::getRoll() {
+    return roll;
+}
+
+int BotvacController::getCharge() {
+    return charge;
+}
+
+int BotvacController::getLeftMagnetStrength() {
+    return leftMagnetStrength;
+}
+
+int BotvacController::getRightMagnetStrength() {
+    return rightMagnetStrength;
+}
+
+int BotvacController::getWallDistance() {
+    return wallDistance;
+}
+
+int BotvacController::getLeftDropDistance() {
+    return leftDropDistance;
+}
+
+int BotvacController::getRightDropDistance() {
+    return rightDropDistance;
+}
+
+bool BotvacController::isLeftWheelExtended() {
+    return leftWheelExtended;
+}
+
+bool BotvacController::isRightWheelExtended() {
+    return rightWheelExtended;
+}
+
+bool BotvacController::isLeftFrontBumperPressed() {
+    return leftFrontBumperPressed;
+}
+
+bool BotvacController::isRightFrontBumperPressed() {
+    return rightFrontBumperPressed;
+}
+
+bool BotvacController::isLeftSideBumperPressed() {
+    return leftSideBumperPressed;
+}
+
+bool BotvacController::isRightSideBumperPressed() {
+    return rightSideBumperPressed;
+}
+
+// Method the get LIDAR scan as a relative x, y coordinate vector
+std::vector<std::vector<int>> BotvacController::getLidarScan() {
+    return scan;
+}
+
+// Method the get LIDAR map as an absolute x, y coordinate vector
+std::vector<std::vector<int>> BotvacController::getLidarMap() {
+    return map;
+}
 
 int BotvacController::getX() {
     return x;
@@ -63,289 +128,6 @@ int BotvacController::getMinPointDistance() {
 
 int BotvacController::getInaccuracyFilterRatio() {
     return inaccuracyFilterRatio;
-}
-
-// Method to get pitch in degrees
-float BotvacController::getPitch() {
-    float returnValue = 0;
-    if (connected) {
-        std::string line;
-        sendCommand("GetAccel");
-        for (int i = 0; i < 7; i++) {
-            std::getline(response, line);
-            if (i == 1) {
-                returnValue = std::stof(line.substr(15));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to get roll in degrees
-float BotvacController::getRoll() {
-    float returnValue = 0;
-    if (connected) {
-        std::string line;
-        sendCommand("GetAccel");
-        for (int i = 0; i < 7; i++) {
-            std::getline(response, line);
-            if (i == 2) {
-                returnValue = std::stof(line.substr(14));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to get charge in percent
-int BotvacController::getCharge() {
-    int returnValue = 0;
-    if (connected) {
-        std::string line;
-        sendCommand("GetCharger");
-        for (int i = 0; i < 16; i++) {
-            std::getline(response, line);
-            if (i == 1) {
-                returnValue = std::stoi(line.substr(12));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to get left magnet sensor reading
-int BotvacController::getLeftMagnetSensor() {
-    int returnValue = 0;
-    if (connected) {
-        std::string line;
-        sendCommand("GetAnalogSensors");
-        for (int i = 0; i < 15; i++) {
-            std::getline(response, line);
-            if (i == 10) {
-                returnValue = std::stoi(line.substr(18));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to get right magnet sensor reading
-int BotvacController::getRightMagnetSensor() {
-    int returnValue = 0;
-    if (connected) {
-        std::string line;
-        sendCommand("GetAnalogSensors");
-        for (int i = 0; i < 15; i++) {
-            std::getline(response, line);
-            if (i == 11) {
-                returnValue = std::stoi(line.substr(19));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to get wall sensor distance in mm
-int BotvacController::getWallSensor() {
-    int returnValue = 0;
-    if (connected) {
-        std::string line;
-        sendCommand("GetAnalogSensors");
-        for (int i = 0; i < 15; i++) {
-            std::getline(response, line);
-            if (i == 12) {
-                returnValue = std::stoi(line.substr(14));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to get left drop sensor distance in mm
-int BotvacController::getLeftDropSensor() {
-    int returnValue = 0;
-    if (connected) {
-        std::string line;
-        sendCommand("GetAnalogSensors");
-        for (int i = 0; i < 15; i++) {
-            std::getline(response, line);
-            if (i == 13) {
-                returnValue = std::stoi(line.substr(18));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to get right drop sensor distance in mm
-int BotvacController::getRightDropSensor() {
-    int returnValue = 0;
-    if (connected) {
-        std::string line;
-        sendCommand("GetAnalogSensors");
-        for (int i = 0; i < 15; i++) {
-            std::getline(response, line);
-            if (i == 14) {
-                returnValue = std::stoi(line.substr(19));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to check whether the left wheel is extended
-bool BotvacController::isLeftWheelExtended() {
-    bool returnValue = false;
-    if (connected) {
-        std::string line;
-        sendCommand("GetDigitalSensors");
-        for (int i = 0; i < 11; i++) {
-            std::getline(response, line);
-            if (i == 3) {
-                returnValue = (bool) std::stoi(line.substr(25));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to check whether the right wheel is extended
-bool BotvacController::isRightWheelExtended() {
-    bool returnValue = false;
-    if (connected) {
-        std::string line;
-        sendCommand("GetDigitalSensors");
-        for (int i = 0; i < 11; i++) {
-            std::getline(response, line);
-            if (i == 4) {
-                returnValue = (bool) std::stoi(line.substr(26));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to check whether the left front bumper is extended
-bool BotvacController::isLeftFrontBumperPressed() {
-    bool returnValue = false;
-    if (connected) {
-        std::string line;
-        sendCommand("GetDigitalSensors");
-        for (int i = 0; i < 11; i++) {
-            std::getline(response, line);
-            if (i == 6) {
-                returnValue = (bool) std::stoi(line.substr(10));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to check whether the right front bumper is extended
-bool BotvacController::isRightFrontBumperPressed() {
-    bool returnValue = false;
-    if (connected) {
-        std::string line;
-        sendCommand("GetDigitalSensors");
-        for (int i = 0; i < 11; i++) {
-            std::getline(response, line);
-            if (i == 9) {
-                returnValue = (bool) std::stoi(line.substr(10));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to check whether the left side bumper is extended
-bool BotvacController::isLeftSideBumperPressed() {
-    bool returnValue = false;
-    if (connected) {
-        std::string line;
-        sendCommand("GetDigitalSensors");
-        for (int i = 0; i < 11; i++) {
-            std::getline(response, line);
-            if (i == 5) {
-                returnValue = (bool) std::stoi(line.substr(9));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method to check whether the right side bumper is extended
-bool BotvacController::isRightSideBumperPressed() {
-    bool returnValue = false;
-    if (connected) {
-        std::string line;
-        sendCommand("GetDigitalSensors");
-        for (int i = 0; i < 11; i++) {
-            std::getline(response, line);
-            if (i == 8) {
-                returnValue = (bool) std::stoi(line.substr(9));
-            }
-        }
-    }
-    return returnValue;
-}
-
-// Method the get LIDAR scan as a relative x, y coordinate vector
-std::vector<std::vector<int>> BotvacController::getLidarScan() {
-    std::vector<std::vector<int>> returnValue;
-    if (connected) {
-        std::string line;
-        sendCommand("GetLDSScan");
-        std::getline(response, line);
-        for (int i = 0; i < 360; i++) {
-            int distance;
-            std::vector<int> coordinates;
-            std::getline(response, line);
-            line.erase(0, line.find(',') + 1);
-            distance = std::stoi(line.substr(0, line.find(',')));
-            if (distance > 6000 || distance == 0) {
-                continue;
-            }
-            coordinates.push_back(std::round(distance * std::cos((i + 90) * (M_PI / 180.0))));
-            coordinates.push_back(std::round((distance * std::sin((i + 90) * (M_PI / 180.0))) - 92.5));
-            returnValue.push_back(coordinates);
-        }
-        std::getline(response, line);
-    }
-    return returnValue;
-}
-
-// Method the get LIDAR map as an absolute x, y coordinate vector
-std::vector<std::vector<int>> BotvacController::getLidarMap() {
-    if (connected) {
-        std::string line;
-        sendCommand("GetLDSScan");
-        std::getline(response, line);
-        for (int i = 0; i < 360; i++) {
-            int distance;
-            std::vector<int> coordinates;
-            int inaccuracyFilter;
-            bool unique = true;
-            std::getline(response, line);
-            line.erase(0, line.find(',') + 1);
-            distance = std::stoi(line.substr(0, line.find(',')));
-            if (distance > 6000 || distance == 0) {
-                continue;
-            }
-            coordinates.push_back(std::round((distance * std::cos((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::sin(angle * (M_PI / 180.0)))) + x);
-            coordinates.push_back(std::round((distance * std::sin((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::cos(angle * (M_PI / 180.0)))) + y);
-            inaccuracyFilter = std::round(std::sqrt(std::pow(coordinates[0] - x, 2) + std::pow(coordinates[1] - y, 2)) * inaccuracyFilterRatio);
-            for (int j = 0; j < map.size(); j++) {
-                if (coordinates[0] >= map[j][0] - (minPointDistance + inaccuracyFilter) && coordinates[0] <= map[j][0] + (minPointDistance + inaccuracyFilter) && coordinates[1] >= map[j][1] - (minPointDistance + inaccuracyFilter) && coordinates[1] <= map[j][1] + (minPointDistance + inaccuracyFilter)) {
-                    unique = false;
-                }
-            }
-            if (unique) {
-                map.push_back(coordinates);
-            }
-        }
-        std::getline(response, line);
-    }
-    return map;
 }
 
 // Setter
@@ -397,6 +179,7 @@ void BotvacController::disconnect() {
         sendCommand("SetLED ButtonGreen");
         sendCommand("SetLED SpotOn");
         sendCommand("SetLDSRotation Off");
+        sendCommand("ClearFiles");
         sendCommand("TestMode Off");
         if (useNetwork) {
             network.reset();
@@ -406,10 +189,157 @@ void BotvacController::disconnect() {
         connected = false;
         useNetwork = false;
         device = "";
+        pitch = 0;
+        roll = 0;
+        charge = 0;
+        leftMagnetStrength = 0;
+        rightMagnetStrength = 0;
+        wallDistance = 0;
+        leftDropDistance = 0;
+        rightDropDistance = 0;
+        leftWheelExtended = false;
+        rightWheelExtended = false;
+        leftFrontBumperPressed = false;
+        rightFrontBumperPressed = false;
+        leftSideBumperPressed = false;
+        rightSideBumperPressed = false;
+        scan.clear();
+        map.clear();
         x = 0;
         y = 0;
         angle = 0;
-        map.clear();
+    }
+}
+
+// Method to update the accelerometer data
+void BotvacController::updateAccelerometer() {
+    if (connected) {
+        std::string line;
+        sendCommand("GetAccel");
+        for (int i = 0; i < 7; i++) {
+            std::getline(response, line);
+            switch (i) {
+                case 1:
+                    pitch = std::stof(line.substr(15));
+                    break;
+                case 2:
+                    roll = std::stof(line.substr(14));
+                    break;
+            }
+        }
+    }
+}
+
+// Method to update the charge data
+void BotvacController::updateCharge() {
+    if (connected) {
+        std::string line;
+        sendCommand("GetCharger");
+        for (int i = 0; i < 16; i++) {
+            std::getline(response, line);
+            switch (i) {
+                case 1:
+                    charge = std::stoi(line.substr(12));
+                    break;
+            }
+        }
+    }
+}
+
+// Method to update the analog sensor data
+void BotvacController::updateAnalogSensors() {
+    if (connected) {
+        std::string line;
+        sendCommand("GetAnalogSensors");
+        for (int i = 0; i < 15; i++) {
+            std::getline(response, line);
+            switch (i) {
+                case 10:
+                    leftMagnetStrength = std::stoi(line.substr(18));
+                    break;
+                case 11:
+                    rightMagnetStrength = std::stoi(line.substr(19));
+                    break;
+                case 12:
+                    wallDistance = std::stoi(line.substr(14));
+                    break;
+                case 13:
+                    leftDropDistance = std::stoi(line.substr(18));
+                    break;
+                case 14:
+                    rightDropDistance = std::stoi(line.substr(19));
+                    break;
+            }
+        }
+    }
+}
+
+// Method to update the digital sensor data
+void BotvacController::updateDigitalSensors() {
+    if (connected) {
+        std::string line;
+        sendCommand("GetDigitalSensors");
+        for (int i = 0; i < 11; i++) {
+            std::getline(response, line);
+            switch (i) {
+                case 3:
+                    leftWheelExtended = (bool) std::stoi(line.substr(25));
+                    break;
+                case 4:
+                    rightWheelExtended = (bool) std::stoi(line.substr(26));
+                    break;
+                case 5:
+                    leftSideBumperPressed = (bool) std::stoi(line.substr(9));
+                    break;
+                case 6:
+                    leftFrontBumperPressed = (bool) std::stoi(line.substr(10));
+                    break;
+                case 8:
+                    rightSideBumperPressed = (bool) std::stoi(line.substr(9));
+                    break;
+                case 9:
+                    rightFrontBumperPressed = (bool) std::stoi(line.substr(10));
+                    break;
+            }
+        }
+    }
+}
+
+// Method to update the LIDAR data
+void BotvacController::updateLidar() {
+    if (connected) {
+        std::string line;
+        sendCommand("GetLDSScan");
+        std::getline(response, line);
+        scan.clear();
+        for (int i = 0; i < 360; i++) {
+            int distance;
+            std::vector<int> coordinates;
+            int inaccuracyFilter;
+            bool unique = true;
+            std::getline(response, line);
+            line.erase(0, line.find(',') + 1);
+            distance = std::stoi(line.substr(0, line.find(',')));
+            if (distance > 7500 || distance == 0) {
+                continue;
+            }
+            coordinates.push_back(std::round(distance * std::cos((i + 90) * (M_PI / 180.0))));
+            coordinates.push_back(std::round((distance * std::sin((i + 90) * (M_PI / 180.0))) - 92.5));
+            scan.push_back(coordinates);
+            coordinates.clear();
+            coordinates.push_back(std::round((distance * std::cos((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::sin(angle * (M_PI / 180.0)))) + x);
+            coordinates.push_back(std::round((distance * std::sin((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::cos(angle * (M_PI / 180.0)))) + y);
+            inaccuracyFilter = std::round(std::sqrt(std::pow(coordinates[0] - x, 2) + std::pow(coordinates[1] - y, 2)) * inaccuracyFilterRatio);
+            for (int j = 0; j < map.size(); j++) {
+                if (coordinates[0] >= map[j][0] - (minPointDistance + inaccuracyFilter) && coordinates[0] <= map[j][0] + (minPointDistance + inaccuracyFilter) && coordinates[1] >= map[j][1] - (minPointDistance + inaccuracyFilter) && coordinates[1] <= map[j][1] + (minPointDistance + inaccuracyFilter)) {
+                    unique = false;
+                }
+            }
+            if (unique) {
+                map.push_back(coordinates);
+            }
+        }
+        std::getline(response, line);
     }
 }
 

@@ -11,11 +11,9 @@ int main(int argc, char** argv) {
         // Communication and navigation related variables
         const bool USE_NETWORK = std::string(argv[1]) == "network";
         const std::string DEVICE = argv[2];
-        const int INTERVAL = USE_NETWORK ? 4 : 2;
         BotvacController botvacController;
         Pathfinder pathfinder;
         std::vector<std::vector<int>> map;
-        std::vector<std::vector<int>> path;
         botvacController.setMinPointDistance(50);
         botvacController.setInaccuracyFilterRatio(0.01);
         pathfinder.setSimplificationFactor(100);
@@ -140,6 +138,8 @@ int main(int argc, char** argv) {
                 int currentY = botvacController.getY();
                 int clickX = visualisation.getClickX();
                 int clickY = visualisation.getClickY();
+                static std::vector<std::vector<int>> path;
+                botvacController.updateLidar();
                 map = botvacController.getLidarMap();
                 // Plan path if wanted
                 if (!map.empty() && path.empty() && clickX != -1 && clickY != -1) {
@@ -178,14 +178,27 @@ int main(int argc, char** argv) {
                         Gtk::Main::iteration();
                     }
                 }
+                botvacController.updateAccelerometer();
                 pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
                 rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
+                while (Gtk::Main::events_pending()) {
+                    Gtk::Main::iteration();
+                }
+                botvacController.updateCharge();
                 chargeData.set_label(std::to_string(botvacController.getCharge()));
-                leftMagnetData.set_label(std::to_string(botvacController.getLeftMagnetSensor()));
-                rightMagnetData.set_label(std::to_string(botvacController.getRightMagnetSensor()));
-                wallData.set_label(std::to_string(botvacController.getWallSensor()));
-                leftDropData.set_label(std::to_string(botvacController.getLeftDropSensor()));
-                rightDropData.set_label(std::to_string(botvacController.getRightDropSensor()));
+                while (Gtk::Main::events_pending()) {
+                    Gtk::Main::iteration();
+                }
+                botvacController.updateAnalogSensors();
+                leftMagnetData.set_label(std::to_string(botvacController.getLeftMagnetStrength()));
+                rightMagnetData.set_label(std::to_string(botvacController.getRightMagnetStrength()));
+                wallData.set_label(std::to_string(botvacController.getWallDistance()));
+                leftDropData.set_label(std::to_string(botvacController.getLeftDropDistance()));
+                rightDropData.set_label(std::to_string(botvacController.getRightDropDistance()));
+                while (Gtk::Main::events_pending()) {
+                    Gtk::Main::iteration();
+                }
+                botvacController.updateDigitalSensors();
                 leftWheelData.set_label(std::to_string(botvacController.isLeftWheelExtended()));
                 rightWheelData.set_label(std::to_string(botvacController.isRightWheelExtended()));
                 leftFrontData.set_label(std::to_string(botvacController.isLeftFrontBumperPressed()));
@@ -194,7 +207,7 @@ int main(int argc, char** argv) {
                 rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
             }
             return true;
-        }, INTERVAL);
+        }, 2);
         // Create the main grid
         grid.set_column_spacing(10);
         grid.set_row_spacing(10);

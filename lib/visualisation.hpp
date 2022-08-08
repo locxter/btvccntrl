@@ -1,7 +1,6 @@
 #ifndef VISUALISATION
 #define VISUALISATION
 #include <iostream>
-#include <cmath>
 #include <gtkmm-3.0/gtkmm.h>
 
 // Visualisation class

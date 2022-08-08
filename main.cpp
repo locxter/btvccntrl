@@ -143,8 +143,19 @@ int main(int argc, char** argv) {
                 map = botvacController.getLidarMap();
                 // Plan path if wanted
                 if (!map.empty() && path.empty() && clickX != -1 && clickY != -1) {
+                    Gtk::MessageDialog dialog(window, "Pathfinder");
+                    dialog.set_secondary_text("Valid path found.\nEnable autonomous navigation?");
                     pathfinder.setMap(map);
                     path = pathfinder.findPath(currentX, currentY, clickX, clickY);
+                    if (path.empty()) {
+                        dialog.set_secondary_text("No valid path found");
+                    } else {
+                        dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+                    }
+                    int response = dialog.run();
+                    if (response != Gtk::RESPONSE_OK) {
+                        path.clear();
+                    }
                 }
                 // Follow path if possible
                 if (!path.empty()) {
@@ -162,7 +173,11 @@ int main(int argc, char** argv) {
                         angle = 180;
                     }
                     if (currentAngle != angle) {
-                        botvacController.rotateRobot(angle - currentAngle, 100);
+                        int angleToGo = angle - currentAngle;
+                        if (std::abs(angleToGo) == 270) {
+                            angleToGo /= -3;
+                        }
+                        botvacController.rotateRobot(angleToGo, 100);
                         visualisation.showVisualisation(map, currentX, currentY, angle);
                         while (Gtk::Main::events_pending()) {
                             Gtk::Main::iteration();

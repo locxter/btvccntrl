@@ -23,6 +23,10 @@ void BotvacController::sendCommand(std::string command) {
         }
     }
     std::getline(response, line);
+    if (line != command + '\r') {
+        std::cout << "Robot failed to execute the command " << command << '.' << std::endl;
+        std::exit(1);
+    }
 }
 
 // Constructors

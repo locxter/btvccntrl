@@ -95,40 +95,54 @@ int main(int argc, char** argv) {
             }
         });
         forwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(500, 100);
-            if (!map.empty()) {
-                visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+            if (botvacController.isConnected()) {
+                botvacController.moveRobot(500, 100);
+                if (!map.empty()) {
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                }
             }
         });
         leftButton.signal_clicked().connect([&]() {
-            botvacController.rotateRobot(-90, 100);
-            if (!map.empty()) {
-                visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+            if (botvacController.isConnected()) {
+                botvacController.rotateRobot(-90, 100);
+                if (!map.empty()) {
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                }
             }
         });
         rightButton.signal_clicked().connect([&]() {
-            botvacController.rotateRobot(90, 100);
-            if (!map.empty()) {
-                visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+            if (botvacController.isConnected()) {
+                botvacController.rotateRobot(90, 100);
+                if (!map.empty()) {
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                }
             }
         });
         backwardButton.signal_clicked().connect([&]() {
-            botvacController.moveRobot(-500, 100);
-            if (!map.empty()) {
-                visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+            if (botvacController.isConnected()) {
+                botvacController.moveRobot(-500, 100);
+                if (!map.empty()) {
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                }
             }
         });
         brushInput.signal_value_changed().connect([&]() {
-            botvacController.controlBrush(std::round(brushInput.get_value()));
+            if (botvacController.isConnected()) {
+                botvacController.controlBrush(std::round(brushInput.get_value()));
+            }
         });
         vacuumInput.signal_value_changed().connect([&]() {
-            botvacController.controlVacuum(std::round(vacuumInput.get_value()));
+            if (botvacController.isConnected()) {
+                botvacController.controlVacuum(std::round(vacuumInput.get_value()));
+            }
         });
         sideBrushInput.signal_changed().connect([&]() {
-            if (sideBrushInput.get_active_row_number() == 0) {
-                botvacController.turnSideBrushOn();
-            } else {
-                botvacController.turnSideBrushOff();
+            if (botvacController.isConnected()) {
+                if (sideBrushInput.get_active_row_number() == 0) {
+                    botvacController.turnSideBrushOn();
+                } else {
+                    botvacController.turnSideBrushOff();
+                }
             }
         });
         // Create a background function for updating the map and it's visualisation as well as handling navigation
@@ -159,7 +173,6 @@ int main(int argc, char** argv) {
                         dialog.set_secondary_text("No valid path found");
                         dialog.run();
                     }
-
                 }
                 // Follow path if possible
                 if (!path.empty()) {

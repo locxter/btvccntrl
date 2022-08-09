@@ -144,18 +144,22 @@ int main(int argc, char** argv) {
                 // Plan path if wanted
                 if (!map.empty() && path.empty() && clickX != -1 && clickY != -1) {
                     Gtk::MessageDialog dialog(window, "Pathfinder");
-                    dialog.set_secondary_text("Valid path found.\nEnable autonomous navigation?");
                     pathfinder.setMap(map);
                     path = pathfinder.findPath(currentX, currentY, clickX, clickY);
-                    if (path.empty()) {
-                        dialog.set_secondary_text("No valid path found");
-                    } else {
+                    // Show a confirmation dialog
+                    if (!path.empty()) {
+                        int response;
+                        dialog.set_secondary_text("Valid path found.\nEnable autonomous navigation?");
                         dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+                        response = dialog.run();
+                        if (response != Gtk::RESPONSE_OK) {
+                            path.clear();
+                        }
+                    } else {
+                        dialog.set_secondary_text("No valid path found");
+                        dialog.run();
                     }
-                    int response = dialog.run();
-                    if (response != Gtk::RESPONSE_OK) {
-                        path.clear();
-                    }
+
                 }
                 // Follow path if possible
                 if (!path.empty()) {

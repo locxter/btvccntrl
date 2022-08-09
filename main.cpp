@@ -163,14 +163,14 @@ int main(int argc, char** argv) {
                     // Show a confirmation dialog
                     if (!path.empty()) {
                         int response;
-                        dialog.set_secondary_text("Valid path found.\nEnable autonomous navigation?");
+                        dialog.set_secondary_text("Follow generated path autonomously?");
                         dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
                         response = dialog.run();
                         if (response != Gtk::RESPONSE_OK) {
                             path.clear();
                         }
                     } else {
-                        dialog.set_secondary_text("No valid path found");
+                        dialog.set_secondary_text("No path found");
                         dialog.run();
                     }
                 }

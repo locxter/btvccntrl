@@ -178,24 +178,24 @@ int main(int argc, char** argv) {
                 if (!path.empty()) {
                     std::vector<int> coordinates = path[0];
                     int currentAngle = botvacController.getAngle();
-                    int angle = 0;
+                    int direction = 0;
                     int distance = std::abs(coordinates[1] - currentY);
                     if (coordinates[0] < currentX) {
                         distance = std::abs(coordinates[0] - currentX);
-                        angle = 270;
+                        direction = 3;
                     } else if (coordinates[0] > currentX) {
                         distance = std::abs(coordinates[0] - currentX);
-                        angle = 90;
+                        direction = 1;
                     } else if (coordinates[1] < currentY) {
-                        angle = 180;
+                        direction = 2;
                     }
-                    if (currentAngle != angle) {
-                        int angleToGo = angle - currentAngle;
+                    if (currentAngle != (direction * 90)) {
+                        int angleToGo = (direction * 90) - currentAngle;
                         if (std::abs(angleToGo) == 270) {
                             angleToGo /= -3;
                         }
                         botvacController.rotateRobot(angleToGo, 100);
-                        visualisation.showVisualisation(map, currentX, currentY, angle);
+                        visualisation.showVisualisation(map, currentX, currentY, (direction * 90));
                         while (Gtk::Main::events_pending()) {
                             Gtk::Main::iteration();
                         }

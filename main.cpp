@@ -1,5 +1,5 @@
 #include <iostream>
-#include <fstream> 
+#include <fstream>
 #include "lib/botvac-controller.hpp"
 #include "lib/pathfinder.hpp"
 #include "lib/visualisation.hpp"
@@ -85,10 +85,7 @@ int main(int argc, char** argv) {
                 outputFile.open(completeFilename);
                 outputFile << "X:, Y:" << std::endl;
                 for (int i = 0; i < map.size(); i++) {
-                    outputFile << map[i][0] << ", " << map[i][1];
-                    if (i < map.size() - 1) {
-                        outputFile << std::endl;
-                    }
+                    outputFile << map[i][0] << ", " << map[i][1] << std::endl;
                 }
                 outputFile.close();
                 connectButton.set_label("Connect");

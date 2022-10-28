@@ -18,7 +18,7 @@ bool Visualisation::on_draw(const Cairo::RefPtr<Cairo::Context>& context) {
         Glib::RefPtr<Pango::Layout> layout = create_pango_layout("Connect to robot vacuum to see the visualisation.");
         int textWidth;
         int textHeight;
-        context->set_source_rgb(0, 0, 0);
+        context->set_source_rgb(255, 255, 255);
         font.set_family("Sans Serif");
         font.set_weight(Pango::WEIGHT_NORMAL);
         layout->set_font_description(font);
@@ -35,7 +35,7 @@ bool Visualisation::on_draw(const Cairo::RefPtr<Cairo::Context>& context) {
             context->translate(0, std::round(((float) height - getScaledValue(yRange)) / 2));
         }
         // Draw the points
-        context->set_source_rgb(0, 0, 0);
+        context->set_source_rgb(255, 255, 255);
         for (int i = 0; i < map.size(); i++) {
             context->arc(getScaledValue(map[i][0]), getScaledValue(yRange - map[i][1]), std::max(getScaledValue(std::round(maxRange * 0.005)), 2), 0, 2 * M_PI);
             context->fill();

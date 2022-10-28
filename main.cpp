@@ -19,6 +19,7 @@ int main(int argc, char** argv) {
         pathfinder.setSimplificationFactor(100);
         // UI components
         Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("com.github.locxter.btvccntrl");
+        Glib::RefPtr<Gtk::Settings> settings = Gtk::Settings::get_default();
         Gtk::Window window;
         Gtk::Grid grid;
         Gtk::Button connectButton("Connect");
@@ -335,6 +336,7 @@ int main(int argc, char** argv) {
         aboutLabel.set_hexpand(true);
         grid.attach(aboutLabel, 0, 15, 4);
         // Create the main window
+        settings->set_property("gtk-application-prefer-dark-theme", true);
         window.set_title("btvccntrl");
         window.set_border_width(10);
         window.set_default_size(640, 640);

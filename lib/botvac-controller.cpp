@@ -326,12 +326,12 @@ void BotvacController::updateLidar() {
             if (distance > 7500 || distance == 0) {
                 continue;
             }
-            coordinates.push_back(std::round(distance * std::cos((i + 90) * (M_PI / 180.0))));
-            coordinates.push_back(std::round((distance * std::sin((i + 90) * (M_PI / 180.0))) - 92.5));
+            coordinates.push_back(std::round(distance * std::sin(-i * (M_PI / 180.0))));
+            coordinates.push_back(std::round((distance * std::cos(-i * (M_PI / 180.0))) - 92.5));
             scan.push_back(coordinates);
             coordinates.clear();
-            coordinates.push_back(std::round(x + (distance * std::cos((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::sin(angle * (M_PI / 180.0)))));
-            coordinates.push_back(std::round(y + (distance * std::sin((i + 90 - angle) * (M_PI / 180.0))) + (-92.5 * std::cos(angle * (M_PI / 180.0)))));
+            coordinates.push_back(std::round(x + (distance * std::sin((-i + angle) * (M_PI / 180.0))) + (-92.5 * std::sin(angle * (M_PI / 180.0)))));
+            coordinates.push_back(std::round(y + (distance * std::cos((-i + angle) * (M_PI / 180.0))) + (-92.5 * std::cos(angle * (M_PI / 180.0)))));
             inaccuracyFilter = std::round(std::sqrt(std::pow(coordinates[0] - x, 2) + std::pow(coordinates[1] - y, 2)) * inaccuracyFilterRatio);
             for (int j = 0; j < map.size(); j++) {
                 if (coordinates[0] >= map[j][0] - (minPointDistance + inaccuracyFilter) && coordinates[0] <= map[j][0] + (minPointDistance + inaccuracyFilter) && coordinates[1] >= map[j][1] - (minPointDistance + inaccuracyFilter) && coordinates[1] <= map[j][1] + (minPointDistance + inaccuracyFilter)) {

@@ -46,7 +46,7 @@ bool Visualisation::on_draw(const Cairo::RefPtr<Cairo::Context>& context) {
         context->fill();
         context->set_line_width(std::max(getScaledValue(std::round(maxRange * 0.005)), 2));
         context->move_to(getScaledValue(x), getScaledValue(yRange - y));
-        context->line_to(getScaledValue(x) + std::round(std::max(getScaledValue(std::round(maxRange * 0.05)), 20) * std::sin((180 - angle) * (M_PI / 180.0))), getScaledValue(yRange - y) + std::round(std::max(getScaledValue(std::round(maxRange * 0.05)), 20) * std::cos((180 - angle) * (M_PI / 180.0))));
+        context->line_to(getScaledValue(x) + std::round(std::max(getScaledValue(std::round(maxRange * 0.05)), 20) * std::sin(angle * (M_PI / 180.0))), getScaledValue(yRange - y) + std::round(std::max(getScaledValue(std::round(maxRange * 0.05)), 20) * std::cos((180 - angle) * (M_PI / 180.0))));
         context->stroke();
     }
     return true;

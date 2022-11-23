@@ -11,12 +11,9 @@ int main(int argc, char** argv) {
         // Communication and navigation related variables
         const bool USE_NETWORK = std::string(argv[1]) == "network";
         const std::string DEVICE = argv[2];
-        BotvacController botvacController;
-        Pathfinder pathfinder;
+        BotvacController botvacController(50, 0.01);
+        Pathfinder pathfinder(100);
         std::vector<std::vector<int>> map;
-        botvacController.setMinPointDistance(50);
-        botvacController.setInaccuracyFilterRatio(0.01);
-        pathfinder.setSimplificationFactor(100);
         // UI components
         Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("com.github.locxter.btvccntrl");
         Glib::RefPtr<Gtk::Settings> settings = Gtk::Settings::get_default();

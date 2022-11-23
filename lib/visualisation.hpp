@@ -30,8 +30,10 @@ class Visualisation : public Gtk::DrawingArea {
     bool on_button_press_event(GdkEventButton* event) override;
 
     public:
-    // Constructor
+    // Constructors
     Visualisation();
+
+    Visualisation(std::vector<std::vector<int>> map, int x, int y, int angle);
 
     // Getter
     int getClickX();

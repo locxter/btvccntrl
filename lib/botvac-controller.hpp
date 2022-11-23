@@ -49,6 +49,18 @@ class BotvacController {
 
     BotvacController(std::string device, bool useNetwork = false);
 
+    BotvacController(int minPointDistance);
+
+    BotvacController(float inaccuracyFilterRatio);
+
+    BotvacController(int minPointDistance, float inaccuracyFilterRatio);
+
+    BotvacController(int minPointDistance, std::string device, bool useNetwork = false);
+
+    BotvacController(float inaccuracyFilterRatio, std::string device, bool useNetwork = false);
+
+    BotvacController(int minPointDistance, float inaccuracyFilterRatio, std::string device, bool useNetwork = false);
+
     // Getter
     bool isConnected();
 

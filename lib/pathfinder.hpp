@@ -40,8 +40,14 @@ class Pathfinder {
     Node* findNodeInList(std::vector<Node*> list, int x, int y);
 
     public:
-    // Constructor
+    // Constructors
     Pathfinder();
+
+    Pathfinder(std::vector<std::vector<int>> map);
+
+    Pathfinder(int simplificationFactor);
+
+    Pathfinder(std::vector<std::vector<int>> map, int simplificationFactor);
 
     // Getter
     int getSimplificationFactor();

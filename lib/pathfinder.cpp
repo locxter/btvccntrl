@@ -40,8 +40,24 @@ Pathfinder::Node* Pathfinder::findNodeInList(std::vector<Node*> list, int x, int
     return returnValue;
 }
 
-// Constructor
+// Constructors
 Pathfinder::Pathfinder() {
+}
+
+Pathfinder::Pathfinder(std::vector<std::vector<int>> map) {
+    Pathfinder();
+    setMap(map);
+}
+
+Pathfinder::Pathfinder(int simplificationFactor) {
+    Pathfinder();
+    setSimplificationFactor(simplificationFactor);
+}
+
+Pathfinder::Pathfinder(std::vector<std::vector<int>> map, int simplificationFactor) {
+    Pathfinder();
+    setMap(map);
+    setSimplificationFactor(simplificationFactor);
 }
 
 // Getter
@@ -180,7 +196,7 @@ std::vector<std::vector<int>> Pathfinder::findPath(int sourceX, int sourceY, int
         }
     }
     simplifiedPath.push_back(path.back());
-    // Check for successful pathfinding 
+    // Check for successful pathfinding
     if (simplifiedPath.back()[0] != (targetX + xMin) * simplificationFactor || simplifiedPath.back()[1] != (targetY + yMin) * simplificationFactor) {
         simplifiedPath.clear();
     }

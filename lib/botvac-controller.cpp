@@ -35,7 +35,42 @@ BotvacController::BotvacController() {
 }
 
 BotvacController::BotvacController(std::string device, bool useNetwork) {
-    std::setlocale(LC_ALL, "C");
+    BotvacController();
+    connect(device, useNetwork);
+}
+
+BotvacController::BotvacController(int minPointDistance) {
+    BotvacController();
+    setMinPointDistance(minPointDistance);
+}
+
+BotvacController::BotvacController(float inaccuracyFilterRatio) {
+    BotvacController();
+    setInaccuracyFilterRatio(inaccuracyFilterRatio);
+}
+
+BotvacController::BotvacController(int minPointDistance, float inaccuracyFilterRatio) {
+    BotvacController();
+    setMinPointDistance(minPointDistance);
+    setInaccuracyFilterRatio(inaccuracyFilterRatio);
+}
+
+BotvacController::BotvacController(int minPointDistance, std::string device, bool useNetwork) {
+    BotvacController();
+    setInaccuracyFilterRatio(inaccuracyFilterRatio);
+    connect(device, useNetwork);
+}
+
+BotvacController::BotvacController(float inaccuracyFilterRatio, std::string device, bool useNetwork) {
+    BotvacController();
+    setInaccuracyFilterRatio(inaccuracyFilterRatio);
+    connect(device, useNetwork);
+}
+
+BotvacController::BotvacController(int minPointDistance, float inaccuracyFilterRatio, std::string device, bool useNetwork) {
+    BotvacController();
+    setMinPointDistance(minPointDistance);
+    setInaccuracyFilterRatio(inaccuracyFilterRatio);
     connect(device, useNetwork);
 }
 

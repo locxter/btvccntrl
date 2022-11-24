@@ -4,7 +4,7 @@
 
 ![Overview image](overview.png)
 
-This is a GUI program for controlling Neato Botvac robot vacuums.
+This is a GUI program for controlling Neato Botvac D85 robot vacuums. It might also work with other models, but I have not tested that.
 
 ## Dependencies
 

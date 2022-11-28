@@ -26,6 +26,7 @@ class Visualisation : public Gtk::DrawingArea {
     protected:
     // Method to actually draw the visualisation
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& context) override;
+
     // Method to deal with mouse clicks
     bool on_button_press_event(GdkEventButton* event) override;
 

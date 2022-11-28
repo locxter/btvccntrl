@@ -14,7 +14,7 @@ int Pathfinder::Node::getTotalCost() {
     return pastCost + futureCost;
 }
 
-// Method to detect a collision
+// Helper method to detect a collision
 bool Pathfinder::detectCollision(int x, int y) {
     int collisionBoxSize = std::ceil(250.0 / simplificationFactor);
     bool returnValue = false;
@@ -29,7 +29,7 @@ bool Pathfinder::detectCollision(int x, int y) {
     return returnValue;
 }
 
-// Method to find a node by it's coordinates
+// Helper method to find a node by its coordinates
 Pathfinder::Node* Pathfinder::findNodeInList(std::vector<Node*> list, int x, int y) {
     Node* returnValue = nullptr;
     for (Node* node : list) {
@@ -44,18 +44,15 @@ Pathfinder::Node* Pathfinder::findNodeInList(std::vector<Node*> list, int x, int
 Pathfinder::Pathfinder() {
 }
 
-Pathfinder::Pathfinder(std::vector<std::vector<int>> map) {
-    Pathfinder();
+Pathfinder::Pathfinder(std::vector<std::vector<int>> map) : Pathfinder() {
     setMap(map);
 }
 
-Pathfinder::Pathfinder(int simplificationFactor) {
-    Pathfinder();
+Pathfinder::Pathfinder(int simplificationFactor) : Pathfinder() {
     setSimplificationFactor(simplificationFactor);
 }
 
-Pathfinder::Pathfinder(std::vector<std::vector<int>> map, int simplificationFactor) {
-    Pathfinder();
+Pathfinder::Pathfinder(std::vector<std::vector<int>> map, int simplificationFactor) : Pathfinder() {
     setMap(map);
     setSimplificationFactor(simplificationFactor);
 }

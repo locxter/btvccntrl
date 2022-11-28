@@ -40,7 +40,7 @@ class BotvacController {
     int minPointDistance = 0;
     float inaccuracyFilterRatio = 0;
 
-    // Helper method send commands and receive responses the same way regardless of the connection mode
+    // Helper method to send commands and receive responses the same way regardless of the connection mode
     void sendCommand(std::string command);
 
     public:

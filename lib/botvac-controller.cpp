@@ -34,41 +34,34 @@ BotvacController::BotvacController() {
     std::setlocale(LC_ALL, "C");
 }
 
-BotvacController::BotvacController(std::string device, bool useNetwork) {
-    BotvacController();
+BotvacController::BotvacController(std::string device, bool useNetwork) : BotvacController() {
     connect(device, useNetwork);
 }
 
-BotvacController::BotvacController(int minPointDistance) {
-    BotvacController();
+BotvacController::BotvacController(int minPointDistance) : BotvacController() {
     setMinPointDistance(minPointDistance);
 }
 
-BotvacController::BotvacController(float inaccuracyFilterRatio) {
-    BotvacController();
+BotvacController::BotvacController(float inaccuracyFilterRatio) : BotvacController() {
     setInaccuracyFilterRatio(inaccuracyFilterRatio);
 }
 
-BotvacController::BotvacController(int minPointDistance, float inaccuracyFilterRatio) {
-    BotvacController();
+BotvacController::BotvacController(int minPointDistance, float inaccuracyFilterRatio) : BotvacController() {
     setMinPointDistance(minPointDistance);
     setInaccuracyFilterRatio(inaccuracyFilterRatio);
 }
 
-BotvacController::BotvacController(int minPointDistance, std::string device, bool useNetwork) {
-    BotvacController();
+BotvacController::BotvacController(int minPointDistance, std::string device, bool useNetwork) : BotvacController() {
     setInaccuracyFilterRatio(inaccuracyFilterRatio);
     connect(device, useNetwork);
 }
 
-BotvacController::BotvacController(float inaccuracyFilterRatio, std::string device, bool useNetwork) {
-    BotvacController();
+BotvacController::BotvacController(float inaccuracyFilterRatio, std::string device, bool useNetwork) : BotvacController() {
     setInaccuracyFilterRatio(inaccuracyFilterRatio);
     connect(device, useNetwork);
 }
 
-BotvacController::BotvacController(int minPointDistance, float inaccuracyFilterRatio, std::string device, bool useNetwork) {
-    BotvacController();
+BotvacController::BotvacController(int minPointDistance, float inaccuracyFilterRatio, std::string device, bool useNetwork) : BotvacController() {
     setMinPointDistance(minPointDistance);
     setInaccuracyFilterRatio(inaccuracyFilterRatio);
     connect(device, useNetwork);

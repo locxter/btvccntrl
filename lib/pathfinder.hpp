@@ -33,10 +33,10 @@ class Pathfinder {
         int getTotalCost();
     };
 
-    // Method to detect a collision
+    // Helper method to detect a collision
     bool detectCollision(int x, int y);
 
-    // Method to find a node by it's coordinates
+    // Helper method to find a node by its coordinates
     Node* findNodeInList(std::vector<Node*> list, int x, int y);
 
     public:

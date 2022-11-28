@@ -71,8 +71,7 @@ Visualisation::Visualisation() : Gtk::DrawingArea() {
     add_events(Gdk::BUTTON_PRESS_MASK);
 }
 
-Visualisation::Visualisation(std::vector<std::vector<int>> map, int x, int y, int angle) {
-    Visualisation();
+Visualisation::Visualisation(std::vector<std::vector<int>> map, int x, int y, int angle) : Visualisation() {
     showVisualisation(map, x, y, angle);
 }
 

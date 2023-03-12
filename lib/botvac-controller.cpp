@@ -409,7 +409,7 @@ void BotvacController::rotateRobot(int angle, int speed) {
         } else if (speed > 350) {
             speed = 350;
         }
-        distance = std::round(angle * ((245.0 * M_PI) / 360));
+        distance = std::round(angle * ((250.0 * M_PI) / 360));
         sendCommand("SetMotor LWheelDist " + std::to_string(distance) + " RWheelDist " + std::to_string(-1 * distance) + " Speed " + std::to_string(speed));
         this->angle = (this->angle + angle + 360) % 360;
         sleep(std::ceil(std::abs(distance) / (float) speed));

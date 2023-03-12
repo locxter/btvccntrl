@@ -16,7 +16,7 @@ int Pathfinder::Node::getTotalCost() {
 
 // Helper method to detect a collision
 bool Pathfinder::detectCollision(int x, int y) {
-    int collisionBoxSize = std::ceil(250.0 / simplificationFactor);
+    int collisionBoxSize = std::ceil(240.0 / simplificationFactor);
     bool returnValue = false;
     if (x < 0 || x > std::abs(xMin) + std::abs(xMax) || y < 0 || y > std::abs(yMin) + std::abs(yMax)) {
         returnValue = true;

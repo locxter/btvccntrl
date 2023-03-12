@@ -11,8 +11,9 @@ int main(int argc, char** argv) {
         // Communication and navigation related variables
         const bool USE_NETWORK = std::string(argv[1]) == "network";
         const std::string DEVICE = argv[2];
+        const int SPEED = 150;
         BotvacController botvacController(50, 0.01);
-        Pathfinder pathfinder(100);
+        Pathfinder pathfinder(80);
         std::vector<std::vector<int>> map;
         // UI components
         Glib::RefPtr<Gtk::Application> app = Gtk::Application::create("com.github.locxter.btvccntrl");
@@ -91,7 +92,7 @@ int main(int argc, char** argv) {
         });
         forwardButton.signal_clicked().connect([&]() {
             if (botvacController.isConnected()) {
-                botvacController.moveRobot(500, 100);
+                botvacController.moveRobot(500, SPEED);
                 if (!map.empty()) {
                     visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
                 }
@@ -99,7 +100,7 @@ int main(int argc, char** argv) {
         });
         leftButton.signal_clicked().connect([&]() {
             if (botvacController.isConnected()) {
-                botvacController.rotateRobot(-90, 100);
+                botvacController.rotateRobot(-90, SPEED);
                 if (!map.empty()) {
                     visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
                 }
@@ -107,7 +108,7 @@ int main(int argc, char** argv) {
         });
         rightButton.signal_clicked().connect([&]() {
             if (botvacController.isConnected()) {
-                botvacController.rotateRobot(90, 100);
+                botvacController.rotateRobot(90, SPEED);
                 if (!map.empty()) {
                     visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
                 }
@@ -115,7 +116,7 @@ int main(int argc, char** argv) {
         });
         backwardButton.signal_clicked().connect([&]() {
             if (botvacController.isConnected()) {
-                botvacController.moveRobot(-500, 100);
+                botvacController.moveRobot(-500, SPEED);
                 if (!map.empty()) {
                     visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
                 }
@@ -189,13 +190,13 @@ int main(int argc, char** argv) {
                         if (std::abs(angleToGo) == 270) {
                             angleToGo /= -3;
                         }
-                        botvacController.rotateRobot(angleToGo, 100);
+                        botvacController.rotateRobot(angleToGo, SPEED);
                         visualisation.showVisualisation(map, currentX, currentY, (direction * 90));
                         while (Gtk::Main::events_pending()) {
                             Gtk::Main::iteration();
                         }
                     }
-                    botvacController.moveRobot(distance, 100);
+                    botvacController.moveRobot(distance, SPEED);
                     path.erase(path.begin());
                 }
                 // Update visualisation and other data

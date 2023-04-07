@@ -37,21 +37,26 @@ bool Visualisation::on_draw(const Cairo::RefPtr<Cairo::Context>& context) {
         // Draw the points
         context->set_source_rgb(255, 255, 255);
         for (int i = 0; i < map.size(); i++) {
-            context->arc(getScaledValue(map[i][0]), getScaledValue(yRange - map[i][1]), std::max(getScaledValue(std::round(maxRange * 0.005)), 2), 0, 2 * M_PI);
+            context->arc(getScaledValue(map[i][0]), getScaledValue(yRange - map[i][1]),
+                         std::max(getScaledValue(std::round(maxRange * 0.005)), 2), 0, 2 * M_PI);
             context->fill();
         }
         // Draw the robot and it's movement direction
         context->set_source_rgb(0, 255, 0);
-        context->arc(getScaledValue(x), getScaledValue(yRange - y), std::max(getScaledValue(std::round(maxRange * 0.01)), 4), 0, 2 * M_PI);
+        context->arc(getScaledValue(x), getScaledValue(yRange - y),
+                     std::max(getScaledValue(std::round(maxRange * 0.01)), 4), 0, 2 * M_PI);
         context->fill();
         context->set_line_width(std::max(getScaledValue(std::round(maxRange * 0.005)), 2));
         context->move_to(getScaledValue(x), getScaledValue(yRange - y));
-        context->line_to(getScaledValue(x) + std::round(std::max(getScaledValue(std::round(maxRange * 0.05)), 20) * std::sin(angle * (M_PI / 180.0))), getScaledValue(yRange - y) + std::round(std::max(getScaledValue(std::round(maxRange * 0.05)), 20) * std::cos((180 - angle) * (M_PI / 180.0))));
+        context->line_to(getScaledValue(x) + std::round(std::max(getScaledValue(std::round(maxRange * 0.05)), 20) *
+                                                        std::sin(angle * (M_PI / 180.0))),
+                         getScaledValue(yRange - y) +
+                             std::round(std::max(getScaledValue(std::round(maxRange * 0.05)), 20) *
+                                        std::cos((180 - angle) * (M_PI / 180.0))));
         context->stroke();
     }
     return true;
 }
-
 
 // Method to deal with mouse clicks
 bool Visualisation::on_button_press_event(GdkEventButton* event) {
@@ -59,7 +64,8 @@ bool Visualisation::on_button_press_event(GdkEventButton* event) {
     int height = get_height();
     int xOffset = std::round(((float) width - getScaledValue(std::abs(xMin) + std::abs(xMax))) / 2);
     int yOffset = std::round(((float) height - getScaledValue(std::abs(yMin) + std::abs(yMax))) / 2);
-    if (!showStartScreen && event->type == GDK_BUTTON_PRESS && event->x > xOffset && event->x < width - xOffset && event->y > yOffset && event->y < height - yOffset) {
+    if (!showStartScreen && event->type == GDK_BUTTON_PRESS && event->x > xOffset && event->x < width - xOffset &&
+        event->y > yOffset && event->y < height - yOffset) {
         clickX = ((event->x - xOffset) * (1 / scalingRatio)) + xMin;
         clickY = ((height - (yOffset + event->y)) * (1 / scalingRatio)) + yMin;
     }

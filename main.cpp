@@ -1,8 +1,8 @@
-#include <iostream>
-#include <fstream>
 #include "lib/botvac-controller.hpp"
 #include "lib/pathfinder.hpp"
 #include "lib/visualisation.hpp"
+#include <fstream>
+#include <iostream>
 
 // Main function
 int main(int argc, char** argv) {
@@ -94,7 +94,8 @@ int main(int argc, char** argv) {
             if (botvacController.isConnected()) {
                 botvacController.moveRobot(500, SPEED);
                 if (!map.empty()) {
-                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(),
+                                                    botvacController.getAngle());
                 }
             }
         });
@@ -102,7 +103,8 @@ int main(int argc, char** argv) {
             if (botvacController.isConnected()) {
                 botvacController.rotateRobot(-90, SPEED);
                 if (!map.empty()) {
-                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(),
+                                                    botvacController.getAngle());
                 }
             }
         });
@@ -110,7 +112,8 @@ int main(int argc, char** argv) {
             if (botvacController.isConnected()) {
                 botvacController.rotateRobot(90, SPEED);
                 if (!map.empty()) {
-                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(),
+                                                    botvacController.getAngle());
                 }
             }
         });
@@ -118,7 +121,8 @@ int main(int argc, char** argv) {
             if (botvacController.isConnected()) {
                 botvacController.moveRobot(-500, SPEED);
                 if (!map.empty()) {
-                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(),
+                                                    botvacController.getAngle());
                 }
             }
         });
@@ -142,100 +146,103 @@ int main(int argc, char** argv) {
             }
         });
         // Create a background function for updating the map and it's visualisation as well as handling navigation
-        Glib::signal_timeout().connect_seconds([&]() -> bool {
-            if (botvacController.isConnected()) {
-                int currentX = botvacController.getX();
-                int currentY = botvacController.getY();
-                int clickX = visualisation.getClickX();
-                int clickY = visualisation.getClickY();
-                static std::vector<std::vector<int>> path;
-                botvacController.updateLidar();
-                map = botvacController.getLidarMap();
-                // Plan path if wanted
-                if (!map.empty() && path.empty() && clickX != -1 && clickY != -1) {
-                    Gtk::MessageDialog dialog(window, "Pathfinder");
-                    pathfinder.setMap(map);
-                    path = pathfinder.findPath(currentX, currentY, clickX, clickY);
-                    // Show a confirmation dialog
+        Glib::signal_timeout().connect_seconds(
+            [&]() -> bool {
+                if (botvacController.isConnected()) {
+                    int currentX = botvacController.getX();
+                    int currentY = botvacController.getY();
+                    int clickX = visualisation.getClickX();
+                    int clickY = visualisation.getClickY();
+                    static std::vector<std::vector<int>> path;
+                    botvacController.updateLidar();
+                    map = botvacController.getLidarMap();
+                    // Plan path if wanted
+                    if (!map.empty() && path.empty() && clickX != -1 && clickY != -1) {
+                        Gtk::MessageDialog dialog(window, "Pathfinder");
+                        pathfinder.setMap(map);
+                        path = pathfinder.findPath(currentX, currentY, clickX, clickY);
+                        // Show a confirmation dialog
+                        if (!path.empty()) {
+                            int response;
+                            dialog.set_secondary_text("Follow generated path autonomously?");
+                            dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
+                            response = dialog.run();
+                            if (response != Gtk::RESPONSE_OK) {
+                                path.clear();
+                            }
+                        } else {
+                            dialog.set_secondary_text("No path found");
+                            dialog.run();
+                        }
+                    }
+                    // Follow path if possible
                     if (!path.empty()) {
-                        int response;
-                        dialog.set_secondary_text("Follow generated path autonomously?");
-                        dialog.add_button("Cancel", Gtk::RESPONSE_CANCEL);
-                        response = dialog.run();
-                        if (response != Gtk::RESPONSE_OK) {
-                            path.clear();
+                        std::vector<int> coordinates = path[0];
+                        int currentAngle = botvacController.getAngle();
+                        int direction = 0;
+                        int distance = std::abs(coordinates[1] - currentY);
+                        if (coordinates[0] < currentX) {
+                            distance = std::abs(coordinates[0] - currentX);
+                            direction = 3;
+                        } else if (coordinates[0] > currentX) {
+                            distance = std::abs(coordinates[0] - currentX);
+                            direction = 1;
+                        } else if (coordinates[1] < currentY) {
+                            direction = 2;
                         }
-                    } else {
-                        dialog.set_secondary_text("No path found");
-                        dialog.run();
-                    }
-                }
-                // Follow path if possible
-                if (!path.empty()) {
-                    std::vector<int> coordinates = path[0];
-                    int currentAngle = botvacController.getAngle();
-                    int direction = 0;
-                    int distance = std::abs(coordinates[1] - currentY);
-                    if (coordinates[0] < currentX) {
-                        distance = std::abs(coordinates[0] - currentX);
-                        direction = 3;
-                    } else if (coordinates[0] > currentX) {
-                        distance = std::abs(coordinates[0] - currentX);
-                        direction = 1;
-                    } else if (coordinates[1] < currentY) {
-                        direction = 2;
-                    }
-                    if (currentAngle != (direction * 90)) {
-                        int angleToGo = (direction * 90) - currentAngle;
-                        if (std::abs(angleToGo) == 270) {
-                            angleToGo /= -3;
+                        if (currentAngle != (direction * 90)) {
+                            int angleToGo = (direction * 90) - currentAngle;
+                            if (std::abs(angleToGo) == 270) {
+                                angleToGo /= -3;
+                            }
+                            botvacController.rotateRobot(angleToGo, SPEED);
+                            visualisation.showVisualisation(map, currentX, currentY, (direction * 90));
+                            while (Gtk::Main::events_pending()) {
+                                Gtk::Main::iteration();
+                            }
                         }
-                        botvacController.rotateRobot(angleToGo, SPEED);
-                        visualisation.showVisualisation(map, currentX, currentY, (direction * 90));
+                        botvacController.moveRobot(distance, SPEED);
+                        path.erase(path.begin());
+                    }
+                    // Update visualisation and other data
+                    if (!map.empty()) {
+                        visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(),
+                                                        botvacController.getAngle());
                         while (Gtk::Main::events_pending()) {
                             Gtk::Main::iteration();
                         }
                     }
-                    botvacController.moveRobot(distance, SPEED);
-                    path.erase(path.begin());
-                }
-                // Update visualisation and other data
-                if (!map.empty()) {
-                    visualisation.showVisualisation(map, botvacController.getX(), botvacController.getY(), botvacController.getAngle());
+                    botvacController.updateAccelerometer();
+                    pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
+                    rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
                     while (Gtk::Main::events_pending()) {
                         Gtk::Main::iteration();
                     }
+                    botvacController.updateCharge();
+                    chargeData.set_label(std::to_string(botvacController.getCharge()));
+                    while (Gtk::Main::events_pending()) {
+                        Gtk::Main::iteration();
+                    }
+                    botvacController.updateAnalogSensors();
+                    leftMagnetData.set_label(std::to_string(botvacController.getLeftMagnetStrength()));
+                    rightMagnetData.set_label(std::to_string(botvacController.getRightMagnetStrength()));
+                    wallData.set_label(std::to_string(botvacController.getWallDistance()));
+                    leftDropData.set_label(std::to_string(botvacController.getLeftDropDistance()));
+                    rightDropData.set_label(std::to_string(botvacController.getRightDropDistance()));
+                    while (Gtk::Main::events_pending()) {
+                        Gtk::Main::iteration();
+                    }
+                    botvacController.updateDigitalSensors();
+                    leftWheelData.set_label(std::to_string(botvacController.isLeftWheelExtended()));
+                    rightWheelData.set_label(std::to_string(botvacController.isRightWheelExtended()));
+                    leftFrontData.set_label(std::to_string(botvacController.isLeftFrontBumperPressed()));
+                    rightFrontData.set_label(std::to_string(botvacController.isRightFrontBumperPressed()));
+                    leftSideData.set_label(std::to_string(botvacController.isLeftSideBumperPressed()));
+                    rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
                 }
-                botvacController.updateAccelerometer();
-                pitchData.set_label(std::to_string((int) std::round(botvacController.getPitch())));
-                rollData.set_label(std::to_string((int) std::round(botvacController.getRoll())));
-                while (Gtk::Main::events_pending()) {
-                    Gtk::Main::iteration();
-                }
-                botvacController.updateCharge();
-                chargeData.set_label(std::to_string(botvacController.getCharge()));
-                while (Gtk::Main::events_pending()) {
-                    Gtk::Main::iteration();
-                }
-                botvacController.updateAnalogSensors();
-                leftMagnetData.set_label(std::to_string(botvacController.getLeftMagnetStrength()));
-                rightMagnetData.set_label(std::to_string(botvacController.getRightMagnetStrength()));
-                wallData.set_label(std::to_string(botvacController.getWallDistance()));
-                leftDropData.set_label(std::to_string(botvacController.getLeftDropDistance()));
-                rightDropData.set_label(std::to_string(botvacController.getRightDropDistance()));
-                while (Gtk::Main::events_pending()) {
-                    Gtk::Main::iteration();
-                }
-                botvacController.updateDigitalSensors();
-                leftWheelData.set_label(std::to_string(botvacController.isLeftWheelExtended()));
-                rightWheelData.set_label(std::to_string(botvacController.isRightWheelExtended()));
-                leftFrontData.set_label(std::to_string(botvacController.isLeftFrontBumperPressed()));
-                rightFrontData.set_label(std::to_string(botvacController.isRightFrontBumperPressed()));
-                leftSideData.set_label(std::to_string(botvacController.isLeftSideBumperPressed()));
-                rightSideData.set_label(std::to_string(botvacController.isRightSideBumperPressed()));
-            }
-            return true;
-        }, 2);
+                return true;
+            },
+            2);
         // Create the main grid
         grid.set_column_spacing(10);
         grid.set_row_spacing(10);
@@ -344,7 +351,9 @@ int main(int argc, char** argv) {
         return app->run(window);
     } else {
         // Throw an error on invalid number of command line arguments
-        std::cout << "Wrong number of arguments. Two arguments containing the connection mode (serial or network) and device expected." << std::endl;
+        std::cout << "Wrong number of arguments. Two arguments containing the connection mode (serial or network) and "
+                     "device expected."
+                  << std::endl;
         std::cout << "Example: " << argv[0] << " serial /dev/ttyACM0" << std::endl;
         return 1;
     }

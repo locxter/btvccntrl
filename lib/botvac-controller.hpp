@@ -1,12 +1,12 @@
 #ifndef BOTVAC_CONTROLLER
 #define BOTVAC_CONTROLLER
-#include <iostream>
-#include <sstream>
 #include <cmath>
-#include <unistd.h>
-#include <libserial/SerialStream.h>
 #include <curlpp/Easy.hpp>
 #include <curlpp/Options.hpp>
+#include <iostream>
+#include <libserial/SerialStream.h>
+#include <sstream>
+#include <unistd.h>
 
 // Botvac controller class
 class BotvacController {

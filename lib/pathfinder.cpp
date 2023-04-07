@@ -22,7 +22,8 @@ bool Pathfinder::detectCollision(int x, int y) {
         returnValue = true;
     }
     for (int i = 0; i < map.size(); i++) {
-        if (map[i][0] >= x - collisionBoxSize && map[i][0] <= x + collisionBoxSize && map[i][1] >= y - collisionBoxSize && map[i][1] <= y + collisionBoxSize) {
+        if (map[i][0] >= x - collisionBoxSize && map[i][0] <= x + collisionBoxSize &&
+            map[i][1] >= y - collisionBoxSize && map[i][1] <= y + collisionBoxSize) {
             returnValue = true;
         }
     }
@@ -188,13 +189,15 @@ std::vector<std::vector<int>> Pathfinder::findPath(int sourceX, int sourceY, int
     }
     // Simplify path to corners
     for (int i = 1; i < path.size() - 1; i++) {
-        if ((path[i][0] == path[i - 1][0] && path[i][0] != path[i + 1][0]) || (path[i][1] == path[i - 1][1] && path[i][1] != path[i + 1][1])) {
+        if ((path[i][0] == path[i - 1][0] && path[i][0] != path[i + 1][0]) ||
+            (path[i][1] == path[i - 1][1] && path[i][1] != path[i + 1][1])) {
             simplifiedPath.push_back(path[i]);
         }
     }
     simplifiedPath.push_back(path.back());
     // Check for successful pathfinding
-    if (simplifiedPath.back()[0] != (targetX + xMin) * simplificationFactor || simplifiedPath.back()[1] != (targetY + yMin) * simplificationFactor) {
+    if (simplifiedPath.back()[0] != (targetX + xMin) * simplificationFactor ||
+        simplifiedPath.back()[1] != (targetY + yMin) * simplificationFactor) {
         simplifiedPath.clear();
     }
     return simplifiedPath;

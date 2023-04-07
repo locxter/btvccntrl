@@ -56,12 +56,15 @@ BotvacController::BotvacController(int minPointDistance, std::string device, boo
     connect(device, useNetwork);
 }
 
-BotvacController::BotvacController(float inaccuracyFilterRatio, std::string device, bool useNetwork) : BotvacController() {
+BotvacController::BotvacController(float inaccuracyFilterRatio, std::string device, bool useNetwork)
+    : BotvacController() {
     setInaccuracyFilterRatio(inaccuracyFilterRatio);
     connect(device, useNetwork);
 }
 
-BotvacController::BotvacController(int minPointDistance, float inaccuracyFilterRatio, std::string device, bool useNetwork) : BotvacController() {
+BotvacController::BotvacController(int minPointDistance, float inaccuracyFilterRatio, std::string device,
+                                   bool useNetwork)
+    : BotvacController() {
     setMinPointDistance(minPointDistance);
     setInaccuracyFilterRatio(inaccuracyFilterRatio);
     connect(device, useNetwork);
@@ -358,11 +361,17 @@ void BotvacController::updateLidar() {
             coordinates.push_back(std::round((distance * std::cos(-i * (M_PI / 180.0))) - 92.5));
             scan.push_back(coordinates);
             coordinates.clear();
-            coordinates.push_back(std::round(x + (distance * std::sin((-i + angle) * (M_PI / 180.0))) + (-92.5 * std::sin(angle * (M_PI / 180.0)))));
-            coordinates.push_back(std::round(y + (distance * std::cos((-i + angle) * (M_PI / 180.0))) + (-92.5 * std::cos(angle * (M_PI / 180.0)))));
-            inaccuracyFilter = std::round(std::sqrt(std::pow(coordinates[0] - x, 2) + std::pow(coordinates[1] - y, 2)) * inaccuracyFilterRatio);
+            coordinates.push_back(std::round(x + (distance * std::sin((-i + angle) * (M_PI / 180.0))) +
+                                             (-92.5 * std::sin(angle * (M_PI / 180.0)))));
+            coordinates.push_back(std::round(y + (distance * std::cos((-i + angle) * (M_PI / 180.0))) +
+                                             (-92.5 * std::cos(angle * (M_PI / 180.0)))));
+            inaccuracyFilter = std::round(std::sqrt(std::pow(coordinates[0] - x, 2) + std::pow(coordinates[1] - y, 2)) *
+                                          inaccuracyFilterRatio);
             for (int j = 0; j < map.size(); j++) {
-                if (coordinates[0] >= map[j][0] - (minPointDistance + inaccuracyFilter) && coordinates[0] <= map[j][0] + (minPointDistance + inaccuracyFilter) && coordinates[1] >= map[j][1] - (minPointDistance + inaccuracyFilter) && coordinates[1] <= map[j][1] + (minPointDistance + inaccuracyFilter)) {
+                if (coordinates[0] >= map[j][0] - (minPointDistance + inaccuracyFilter) &&
+                    coordinates[0] <= map[j][0] + (minPointDistance + inaccuracyFilter) &&
+                    coordinates[1] >= map[j][1] - (minPointDistance + inaccuracyFilter) &&
+                    coordinates[1] <= map[j][1] + (minPointDistance + inaccuracyFilter)) {
                     unique = false;
                 }
             }
@@ -388,7 +397,8 @@ void BotvacController::moveRobot(int distance, int speed) {
         } else if (speed > 350) {
             speed = 350;
         }
-        sendCommand("SetMotor LWheelDist " + std::to_string(distance) + " RWheelDist " + std::to_string(distance) + " Speed " + std::to_string(speed));
+        sendCommand("SetMotor LWheelDist " + std::to_string(distance) + " RWheelDist " + std::to_string(distance) +
+                    " Speed " + std::to_string(speed));
         x += std::round(distance * std::sin(angle * (M_PI / 180.0)));
         y += std::round(distance * std::cos(angle * (M_PI / 180.0)));
         sleep(std::ceil(std::abs(distance) / (float) speed));
@@ -410,7 +420,8 @@ void BotvacController::rotateRobot(int angle, int speed) {
             speed = 350;
         }
         distance = std::round(angle * ((250.0 * M_PI) / 360));
-        sendCommand("SetMotor LWheelDist " + std::to_string(distance) + " RWheelDist " + std::to_string(-1 * distance) + " Speed " + std::to_string(speed));
+        sendCommand("SetMotor LWheelDist " + std::to_string(distance) + " RWheelDist " + std::to_string(-1 * distance) +
+                    " Speed " + std::to_string(speed));
         this->angle = (this->angle + angle + 360) % 360;
         sleep(std::ceil(std::abs(distance) / (float) speed));
     }

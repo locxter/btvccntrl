@@ -1,14 +1,14 @@
 #ifndef PATHFINDER
 #define PATHFINDER
+#include <cmath>
 #include <iostream>
 #include <vector>
-#include <cmath>
 
 // Pathfinder class using A* algorithm
 class Pathfinder {
     private:
     // Attributes
-    const int DIRECTIONS[4][2] = {{0, 1}, {1, 0},{ 0, -1}, {-1, 0}};
+    const int DIRECTIONS[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
     std::vector<std::vector<int>> map;
     int xMin;
     int xMax;

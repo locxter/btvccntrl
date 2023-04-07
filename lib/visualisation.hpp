@@ -1,7 +1,7 @@
 #ifndef VISUALISATION
 #define VISUALISATION
-#include <iostream>
 #include <gtkmm-3.0/gtkmm.h>
+#include <iostream>
 
 // Visualisation class
 class Visualisation : public Gtk::DrawingArea {

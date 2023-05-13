@@ -2,6 +2,8 @@
 
 ## Overview
 
+> This project is **DEPRECATED**, therefore might not be on par with my current coding standards and will not receive any updates now or in the future. Please use my [next generation rewrite (btvccntrl-ng)](https://github.com/locxter/btvccntrl-ng) instead.
+
 ![Overview image](overview.png)
 
 This is a GUI program for controlling Neato Botvac D85 robot vacuums. It might also work with other models, but I have not tested that.
